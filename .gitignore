@@ -1,0 +1,37 @@
+# Maven target directory
+/target/
+
+# Eclipse IDE files
+/.classpath
+/.project
+/.settings/
+
+# IntelliJ IDEA files
+/.idea/
+/*.iml
+/out/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build tool wrappers
+/mvnw
+/mvnw.cmd
+/.mvn/
+
+# Environment files
+.env
+
+# Backup and temp files
+*~
+*.swp
+*.bak
+*.tmp
+*.orig
