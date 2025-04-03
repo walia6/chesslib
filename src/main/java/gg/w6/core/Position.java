@@ -10,6 +10,7 @@ import gg.w6.util.CastlingRights;
 import gg.w6.util.Color;
 import gg.w6.util.Coordinate;
 import gg.w6.util.File;
+import gg.w6.util.MoveType;
 import gg.w6.util.Rank;
 
 /**
@@ -443,211 +444,101 @@ public class Position {
     public Position applyTo(final Move move) {
 
         final Square[][] newSquares = this.squares.clone();
+
         for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
             newSquares[fileIndex] = this.squares[fileIndex].clone();
         }
-
-        final Coordinate newEnPassantTarget = move.getEnPassantTarget();
-        final Color newToMove = this.toMove == Color.WHITE
-                ? Color.BLACK
-                : Color.WHITE;
-        final int newHalfMoveClock = move.isPawnMove() || move.isCapture()
-                ? 0
-                : this.halfMoveClock + 1;
-        final int newFullMoves = this.toMove == Color.BLACK
-                ? this.fullMoves + 1
-                : this.fullMoves;
-        
-        /*
-        // You can't regain castling rights, so if they're all negative,
-                // use the same CastlingRights.
-        //if (//IMPLEMENT CASTLINGRIGHTS.ALLFALSE
-        if (this.castlingRights.allRightFalse()) {
-            newCastlingRights = this.castlingRights;
-        }*/
-        
-
-
-        // Now we just have to modify newSquares and newRights
-
 
         final int fromFileIndex = move.getFrom().getFile().ordinal();
         final int fromRankIndex = move.getFrom().getRank().ordinal();
         final int toFileIndex = move.getTo().getFile().ordinal();
         final int toRankIndex = move.getTo().getRank().ordinal();
 
-        final boolean newWhiteKingsideRight;
-        final boolean newWhiteQueensideRight;
-        final boolean newBlackKingsideRight;
-        final boolean newBlackQueensideRight;
-
-        final boolean currentWhiteKingsideRight =
-                this.castlingRights.whiteKingside();
-        final boolean currentWhiteQueensideRight =
-                this.castlingRights.whiteQueenside();
-        final boolean currentBlackKingsideRight =
-                this.castlingRights.blackKingside();
-        final boolean currentBlackQueensideRight =
-                this.castlingRights.blackQueenside();
-
+        final MoveType moveType = move.getMoveType();
         final Piece movedPiece = move.getMovedPiece();
-
+        
         switch (move.getMoveType()) {
-            case NORMAL: // done
+            case NORMAL -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
-                newSquares[toFileIndex][toRankIndex] =
-                        Square.valueOf(toFileIndex, toRankIndex, movedPiece);
-
-                newWhiteKingsideRight =
-                    currentWhiteKingsideRight
-                    && !(fromFileIndex == 7 && fromRankIndex == 0)
-                    && !(toFileIndex == 7 && toRankIndex == 0)
-                    && !(this.toMove == Color.WHITE && movedPiece instanceof King);
-                
-                newWhiteQueensideRight =
-                    currentWhiteQueensideRight
-                    && !(fromFileIndex == 0 && fromRankIndex == 0)
-                    && !(toFileIndex == 0 && toRankIndex == 0)
-                    && !(this.toMove == Color.WHITE && movedPiece instanceof King);
-                
-                newBlackKingsideRight =
-                    currentBlackKingsideRight
-                    && !(fromFileIndex == 7 && fromRankIndex == 7)
-                    && !(toFileIndex == 7 && toRankIndex == 7)
-                    && !(this.toMove == Color.BLACK && movedPiece instanceof King);
-                
-                newBlackQueensideRight =
-                    currentBlackQueensideRight
-                    && !(fromFileIndex == 0 && fromRankIndex == 7)
-                    && !(toFileIndex == 0 && toRankIndex == 7)
-                    && !(this.toMove == Color.BLACK && movedPiece instanceof King);
-                 
-                break;
-            case CASTLING: // done
-                // from is where the king is, to is where the rook is.
-
-                //the from square and to square will ALWAYS be empty after castling
-                newSquares[fromFileIndex][fromRankIndex] =
-                        Square.valueOf(fromFileIndex, fromRankIndex, null);
-                newSquares[toFileIndex][toRankIndex] =
-                        Square.valueOf(toFileIndex, toRankIndex, null);
-                
-                switch (toRankIndex) {
-                    case 0: // white
-                        switch (toFileIndex) {
-                            case 7: // white kingside
-                                // f1 is rook, g1 is king
-                                newSquares[5][0] = Square.valueOf(5, 0, this.squares[7][0].getPiece());
-                                newSquares[6][0] = Square.valueOf(6, 0, this.squares[4][0].getPiece());
-                                break;
-                            case 0: // white queenside
-                                // d1 is rook, c1 is king
-                                newSquares[3][0] = Square.valueOf(3, 0, this.squares[0][0].getPiece());
-                                newSquares[2][0] = Square.valueOf(2, 0, this.squares[4][0].getPiece());
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Trying to"
-                                        + " castle to a file that is not a or"
-                                        + " h: " + toFileIndex);
-                        }
-                        break;
-                    case 7: //black
-                    switch (toFileIndex) {
-                        case 7: // black kingside
-                            newSquares[5][7] = Square.valueOf(5, 7, this.squares[7][7].getPiece());
-                            newSquares[6][7] = Square.valueOf(6, 7, this.squares[4][7].getPiece());
-                            break;
-                        case 0: // black queenside
-                            newSquares[3][7] = Square.valueOf(3, 7, this.squares[0][7].getPiece());
-                            newSquares[2][7] = Square.valueOf(2, 7, this.squares[4][7].getPiece());
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Trying to"
-                                    + " castle to a file that is not a or"
-                                    + " h.");
-                        }
-                        break;
-                    default: // impossible??
-                        throw new IllegalArgumentException("Trying to castle to"
-                                + " a rank that is not the first or the"
-                                + " eighth.");
+                newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, movedPiece);
+            }
+            case CASTLING -> {
+                newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
+                newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, null);
+        
+                int rank = toRankIndex;
+                int kingFile = 4;
+                if (toFileIndex == 7) { // kingside
+                    newSquares[5][rank] = Square.valueOf(5, rank, this.squares[7][rank].getPiece());
+                    newSquares[6][rank] = Square.valueOf(6, rank, this.squares[kingFile][rank].getPiece());
+                } else if (toFileIndex == 0) { // queenside
+                    newSquares[3][rank] = Square.valueOf(3, rank, this.squares[0][rank].getPiece());
+                    newSquares[2][rank] = Square.valueOf(2, rank, this.squares[kingFile][rank].getPiece());
+                } else {
+                    throw new IllegalArgumentException("Trying to castle to a file that is not a or h: " + toFileIndex);
                 }
-
-                newWhiteKingsideRight =
-                    currentWhiteKingsideRight
-                    && this.toMove != Color.WHITE;
-                
-                newWhiteQueensideRight =
-                    currentWhiteQueensideRight
-                    && this.toMove != Color.WHITE;
-                
-                newBlackKingsideRight =
-                    currentBlackKingsideRight
-                    && this.toMove != Color.BLACK;
-                
-                newBlackQueensideRight =
-                    currentBlackQueensideRight
-                    && this.toMove != Color.BLACK;
-
-
-                break;
-            case EN_PASSANT: // done
-
-                // from square is always empty
-                // [toFileIndex][fromRankIndex] is always empty
-                // to square has the piece of fromsquare
-
+        
+                if (rank != 0 && rank != 7) {
+                    throw new IllegalArgumentException("Trying to castle to a rank that is not the first or the eighth.");
+                }
+            }
+            case EN_PASSANT -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
                 newSquares[toFileIndex][fromRankIndex] = Square.valueOf(toFileIndex, fromRankIndex, null);
                 newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, this.squares[fromFileIndex][fromRankIndex].getPiece());
-
-                newWhiteKingsideRight = currentWhiteKingsideRight;
-                newWhiteQueensideRight = currentWhiteQueensideRight;
-                newBlackKingsideRight = currentBlackKingsideRight;
-                newBlackQueensideRight = currentBlackQueensideRight;
-
-
-                break;
-            case PROMOTION:
-                
-                // from square is always empty
-                // to square has the promotion piece
-
+            }
+            case PROMOTION -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
                 newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, move.getPromotionPiece());
-                
-                newWhiteKingsideRight =
-                    currentWhiteKingsideRight
-                    && !(fromFileIndex == 7 && fromRankIndex == 0)
-                    && !(toFileIndex == 7 && toRankIndex == 0)
-                    && !(this.toMove == Color.WHITE && movedPiece instanceof King);
-            
-                newWhiteQueensideRight =
-                    currentWhiteQueensideRight
-                    && !(fromFileIndex == 0 && fromRankIndex == 0)
-                    && !(toFileIndex == 0 && toRankIndex == 0)
-                    && !(this.toMove == Color.WHITE && movedPiece instanceof King);
-                
-                newBlackKingsideRight =
-                    currentBlackKingsideRight
-                    && !(fromFileIndex == 7 && fromRankIndex == 7)
-                    && !(toFileIndex == 7 && toRankIndex == 7)
-                    && !(this.toMove == Color.BLACK && movedPiece instanceof King);
-                
-                newBlackQueensideRight =
-                    currentBlackQueensideRight
-                    && !(fromFileIndex == 0 && fromRankIndex == 7)
-                    && !(toFileIndex == 0 && toRankIndex == 7)
-                    && !(this.toMove == Color.BLACK && movedPiece instanceof King);
-
-                break;
-            default:
-                throw new IllegalStateException();
+            }
+            default -> throw new IllegalStateException();
         }
 
-        final CastlingRights newCastlingRights = new CastlingRights(newWhiteKingsideRight, newWhiteQueensideRight, newBlackKingsideRight, newBlackQueensideRight);
-
-        return new Position(newSquares, newCastlingRights, newEnPassantTarget, newToMove, newHalfMoveClock, newFullMoves);
+        return new Position(
+            newSquares,
+            new CastlingRights(
+                this.castlingRights.whiteKingside()
+                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                    && !(fromFileIndex == 7 && fromRankIndex == 0)
+                    && !(toFileIndex == 7 && toRankIndex == 0)
+                    && !(this.toMove == Color.WHITE && movedPiece instanceof King)
+                || moveType == MoveType.CASTLING
+                    && this.toMove != Color.WHITE
+                || moveType == MoveType.EN_PASSANT),
+                this.castlingRights.whiteQueenside()
+                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                    && !(fromFileIndex == 0 && fromRankIndex == 0)
+                    && !(toFileIndex == 0 && toRankIndex == 0)
+                    && !(this.toMove == Color.WHITE && movedPiece instanceof King)
+                || moveType == MoveType.CASTLING
+                    && this.toMove != Color.WHITE
+                || moveType == MoveType.EN_PASSANT),
+                this.castlingRights.blackKingside()
+                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                    && !(fromFileIndex == 7 && fromRankIndex == 7)
+                    && !(toFileIndex == 7 && toRankIndex == 7)
+                    && !(this.toMove == Color.BLACK && movedPiece instanceof King)
+                || moveType == MoveType.CASTLING
+                    && this.toMove != Color.BLACK
+                || moveType == MoveType.EN_PASSANT),
+                this.castlingRights.blackQueenside()
+                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                    && !(fromFileIndex == 0 && fromRankIndex == 7)
+                    && !(toFileIndex == 0 && toRankIndex == 7)
+                    && !(this.toMove == Color.BLACK && movedPiece instanceof King)
+                || moveType == MoveType.CASTLING
+                    && this.toMove != Color.BLACK
+                || moveType == MoveType.EN_PASSANT)),
+            move.getEnPassantTarget(),
+            this.toMove == Color.WHITE
+                ? Color.BLACK
+                : Color.WHITE,
+            move.isPawnMove() || move.isCapture()
+                ? 0
+                : this.halfMoveClock + 1,
+            this.toMove == Color.BLACK
+                ? this.fullMoves + 1
+                : this.fullMoves);
     }
     
     

@@ -3,6 +3,7 @@ package gg.w6;
 import gg.w6.core.Move;
 import gg.w6.core.Position;
 import gg.w6.util.Coordinate;
+import gg.w6.util.MoveGenerator;
 import gg.w6.util.MoveType;
 
 public class Main {
@@ -26,8 +27,8 @@ public class Main {
         
 
         assertThat(startingFEN.equals(starting.generateFEN()));
-
-        Move white14 = new Move(Coordinate.valueOf("c2"), Coordinate.valueOf("c4"), starting.getSquare(Coordinate.valueOf("c2")).getPiece(), null, MoveType.NORMAL, null);
+        // "c2-c4"
+        Move white14 = MoveGenerator.generateMoveFromString(starting, "c2-c4");
 
         Position newPosition = starting.applyTo(white14);
 

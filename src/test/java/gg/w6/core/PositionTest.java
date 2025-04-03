@@ -4,6 +4,7 @@ import gg.w6.util.CastlingRights;
 import gg.w6.util.Color;
 import gg.w6.util.Coordinate;
 import gg.w6.util.File;
+import gg.w6.util.MoveGenerator;
 import gg.w6.util.Rank;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -12,6 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -195,6 +199,73 @@ class PositionTest {
         
         assertThrows(IllegalArgumentException.class,
                 () -> new Position(squares, null, null, null, 0, 0));
+    }
+
+    @Test
+    void testGod() {
+        String starting  = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        class  StringTuple {
+            private final String x;
+            private final String y;
+
+            StringTuple(String x, String y) {
+                this.x = x;
+                this.y = y;
+            }
+
+            String getX() {
+                return x;
+            }
+
+            String getY() {
+                return y;
+            }
+        }
+
+        List<StringTuple> moveToResultingPosition = List.of(
+            new StringTuple("e2-e4", "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"),
+            new StringTuple("c7-c6", "rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"),
+            new StringTuple("d2-d4", "rnbqkbnr/pp1ppppp/2p5/8/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2"),
+            new StringTuple("d7-d5", "rnbqkbnr/pp2pppp/2p5/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3"),
+            new StringTuple("e4-e5", "rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3"),
+            new StringTuple("c6-c5", "rnbqkbnr/pp2pppp/8/2ppP3/3P4/8/PPP2PPP/RNBQKBNR w KQkq - 0 4"),
+            new StringTuple("Ng1-f3", "rnbqkbnr/pp2pppp/8/2ppP3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 4"),
+            new StringTuple("Bc8-g4", "rn1qkbnr/pp2pppp/8/2ppP3/3P2b1/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 5"),
+            new StringTuple("Bf1-b5", "rn1qkbnr/pp2pppp/8/1BppP3/3P2b1/5N2/PPP2PPP/RNBQK2R b KQkq - 3 5"),
+            new StringTuple("Nb8-c6", "r2qkbnr/pp2pppp/2n5/1BppP3/3P2b1/5N2/PPP2PPP/RNBQK2R w KQkq - 4 6"),
+            new StringTuple("h2-h3", "r2qkbnr/pp2pppp/2n5/1BppP3/3P2b1/5N1P/PPP2PP1/RNBQK2R b KQkq - 0 6"),
+            new StringTuple("Bg4xf3", "r2qkbnr/pp2pppp/2n5/1BppP3/3P4/5b1P/PPP2PP1/RNBQK2R w KQkq - 0 7"),
+            new StringTuple("Qd1xf3", "r2qkbnr/pp2pppp/2n5/1BppP3/3P4/5Q1P/PPP2PP1/RNB1K2R b KQkq - 0 7"),
+            new StringTuple("e7-e6", "r2qkbnr/pp3ppp/2n1p3/1BppP3/3P4/5Q1P/PPP2PP1/RNB1K2R w KQkq - 0 8"),
+            new StringTuple("e1-g1", "r2qkbnr/pp3ppp/2n1p3/1BppP3/3P4/5Q1P/PPP2PP1/RNB2RK1 b kq - 1 8"),
+            new StringTuple("Qd8-b6", "r3kbnr/pp3ppp/1qn1p3/1BppP3/3P4/5Q1P/PPP2PP1/RNB2RK1 w kq - 2 9"),
+            new StringTuple("Bb5xc6", "r3kbnr/pp3ppp/1qB1p3/2ppP3/3P4/5Q1P/PPP2PP1/RNB2RK1 b kq - 0 9"),
+            new StringTuple("b7xc6", "r3kbnr/p4ppp/1qp1p3/2ppP3/3P4/5Q1P/PPP2PP1/RNB2RK1 w kq - 0 10"),
+            new StringTuple("c2-c3", "r3kbnr/p4ppp/1qp1p3/2ppP3/3P4/2P2Q1P/PP3PP1/RNB2RK1 b kq - 0 10"),
+            new StringTuple("e8-c8", "2kr1bnr/p4ppp/1qp1p3/2ppP3/3P4/2P2Q1P/PP3PP1/RNB2RK1 w - - 1 11"),
+            new StringTuple("Bc1-e3", "2kr1bnr/p4ppp/1qp1p3/2ppP3/3P4/2P1BQ1P/PP3PP1/RN3RK1 b - - 2 11"),
+            new StringTuple("c5-c4", "2kr1bnr/p4ppp/1qp1p3/3pP3/2pP4/2P1BQ1P/PP3PP1/RN3RK1 w - - 0 12"),
+            new StringTuple("b2-b4", "2kr1bnr/p4ppp/1qp1p3/3pP3/1PpP4/2P1BQ1P/P4PP1/RN3RK1 b - b3 0 12"),
+            new StringTuple("c4xb3", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1pP1BQ1P/P4PP1/RN3RK1 w - - 0 13")
+        );
+
+        Position position = Position.valueOf(starting);
+
+        for (StringTuple stringTuple : moveToResultingPosition) {
+            final Move move = MoveGenerator.generateMoveFromString(position, stringTuple.getX());
+            position = position.applyTo(move);
+            assertEquals(stringTuple.getY(), position.generateFEN(), new Supplier<String>() {
+
+                @Override
+                public String get() {
+
+                    return stringTuple.getX();
+                }
+                
+            });
+        }
+
     }
 
 }
