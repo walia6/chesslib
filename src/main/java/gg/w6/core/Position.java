@@ -464,24 +464,29 @@ public class Position {
             }
             case CASTLING -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
-                newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, null);
-        
+                newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, movedPiece);
+            
                 int rank = toRankIndex;
-                int kingFile = 4;
-                if (toFileIndex == 7) { // kingside
-                    newSquares[5][rank] = Square.valueOf(5, rank, this.squares[7][rank].getPiece());
-                    newSquares[6][rank] = Square.valueOf(6, rank, this.squares[kingFile][rank].getPiece());
-                } else if (toFileIndex == 0) { // queenside
-                    newSquares[3][rank] = Square.valueOf(3, rank, this.squares[0][rank].getPiece());
-                    newSquares[2][rank] = Square.valueOf(2, rank, this.squares[kingFile][rank].getPiece());
+                int rookFromFile, rookToFile;
+            
+                if (toFileIndex == 6) { // kingside (e.g., e1 to g1 or e8 to g8)
+                    rookFromFile = 7;
+                    rookToFile = 5;
+                } else if (toFileIndex == 2) { // queenside (e.g., e1 to c1 or e8 to c8)
+                    rookFromFile = 0;
+                    rookToFile = 3;
                 } else {
-                    throw new IllegalArgumentException("Trying to castle to a file that is not a or h: " + toFileIndex);
+                    throw new IllegalArgumentException("Invalid king destination for castling: file " + toFileIndex);
                 }
-        
+            
+                newSquares[rookFromFile][rank] = Square.valueOf(rookFromFile, rank, null);
+                newSquares[rookToFile][rank] = Square.valueOf(rookToFile, rank, this.squares[rookFromFile][rank].getPiece());
+            
                 if (rank != 0 && rank != 7) {
                     throw new IllegalArgumentException("Trying to castle to a rank that is not the first or the eighth.");
                 }
             }
+            
             case EN_PASSANT -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
                 newSquares[toFileIndex][fromRankIndex] = Square.valueOf(toFileIndex, fromRankIndex, null);

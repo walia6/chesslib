@@ -247,7 +247,14 @@ class PositionTest {
             new StringTuple("Bc1-e3", "2kr1bnr/p4ppp/1qp1p3/2ppP3/3P4/2P1BQ1P/PP3PP1/RN3RK1 b - - 2 11"),
             new StringTuple("c5-c4", "2kr1bnr/p4ppp/1qp1p3/3pP3/2pP4/2P1BQ1P/PP3PP1/RN3RK1 w - - 0 12"),
             new StringTuple("b2-b4", "2kr1bnr/p4ppp/1qp1p3/3pP3/1PpP4/2P1BQ1P/P4PP1/RN3RK1 b - b3 0 12"),
-            new StringTuple("c4xb3", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1pP1BQ1P/P4PP1/RN3RK1 w - - 0 13")
+            new StringTuple("c4xb3", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1pP1BQ1P/P4PP1/RN3RK1 w - - 0 13"),
+            new StringTuple("Nb1-d2", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1pP1BQ1P/P2N1PP1/R4RK1 b - - 1 13"),
+            new StringTuple("b3-b2", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/2P1BQ1P/Pp1N1PP1/R4RK1 w - - 0 14"),
+            new StringTuple("Nd2-b3", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1NP1BQ1P/Pp3PP1/R4RK1 b - - 1 14"),
+            new StringTuple("b2xa1N", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1NP1BQ1P/P4PP1/n4RK1 w - - 0 15"),
+            new StringTuple("Qf3-d1", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1NP1B2P/P4PP1/n2Q1RK1 b - - 1 15"),
+            new StringTuple("Na1xb3", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1nP1B2P/P4PP1/3Q1RK1 w - - 0 16"),
+            new StringTuple("Qd1xb3", "2kr1bnr/p4ppp/1qp1p3/3pP3/3P4/1QP1B2P/P4PP1/5RK1 b - - 0 16")
         );
 
         Position position = Position.valueOf(starting);

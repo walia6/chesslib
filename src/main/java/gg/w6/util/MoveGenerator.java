@@ -46,6 +46,7 @@ public class MoveGenerator {
         toSquare = matcher.group(4);
         promotion = matcher.group(5); // null if no promotion
 
+        /*
         if (lan.equals("e1-g1")) {
             toSquare = "h1";
         } else if (lan.equals("e1-c1")) {
@@ -54,7 +55,7 @@ public class MoveGenerator {
             toSquare = "h8";
         } else if (lan.equals("e8-c8")) {
             toSquare = "a8";
-        }
+        }*/
 
         
 
