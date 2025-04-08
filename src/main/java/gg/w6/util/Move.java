@@ -1,9 +1,7 @@
-package gg.w6.core;
+package gg.w6.util;
 
 import gg.w6.piece.Pawn;
 import gg.w6.piece.Piece;
-import gg.w6.util.Coordinate;
-import gg.w6.util.MoveType;
 
 public class Move {
 
@@ -14,7 +12,7 @@ public class Move {
     private final MoveType moveType;
     private final Piece promotionPiece;
 
-    public Move (final Coordinate from, final Coordinate to,
+    Move (final Coordinate from, final Coordinate to,
             final Piece movedPiece, final Piece capturedPiece,
             final MoveType moveType, final Piece promotionPiece) {
         this.from = from;

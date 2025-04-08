@@ -10,6 +10,7 @@ import gg.w6.util.CastlingRights;
 import gg.w6.util.Color;
 import gg.w6.util.Coordinate;
 import gg.w6.util.File;
+import gg.w6.util.Move;
 import gg.w6.util.MoveType;
 import gg.w6.util.Rank;
 
@@ -499,41 +500,41 @@ public class Position {
             default -> throw new IllegalStateException();
         }
 
+        final boolean moveTypeIsNormalOrPromotion = moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION;
+        final boolean moveTypeIsCastling = moveType == MoveType.CASTLING;
+        final boolean moveTypeIsEnPassant = moveType == MoveType.EN_PASSANT;
+        final boolean didWhiteKingNotMove = !(this.toMove == Color.WHITE && movedPiece instanceof King);
+        final boolean didBlackKingNotMove = !(this.toMove == Color.BLACK && movedPiece instanceof King);
+        final boolean whiteToMove = this.toMove == Color.WHITE;
+        final boolean blackToMove = this.toMove == Color.BLACK;
+
         return new Position(
             newSquares,
             new CastlingRights(
                 this.castlingRights.whiteKingside()
-                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                && (moveTypeIsNormalOrPromotion
                     && !(fromFileIndex == 7 && fromRankIndex == 0)
                     && !(toFileIndex == 7 && toRankIndex == 0)
-                    && !(this.toMove == Color.WHITE && movedPiece instanceof King)
-                || moveType == MoveType.CASTLING
-                    && this.toMove != Color.WHITE
-                || moveType == MoveType.EN_PASSANT),
+                    && didWhiteKingNotMove
+                || moveTypeIsCastling && blackToMove || moveTypeIsEnPassant),
                 this.castlingRights.whiteQueenside()
-                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                && (moveTypeIsNormalOrPromotion
                     && !(fromFileIndex == 0 && fromRankIndex == 0)
                     && !(toFileIndex == 0 && toRankIndex == 0)
-                    && !(this.toMove == Color.WHITE && movedPiece instanceof King)
-                || moveType == MoveType.CASTLING
-                    && this.toMove != Color.WHITE
-                || moveType == MoveType.EN_PASSANT),
+                    && didWhiteKingNotMove
+                || moveTypeIsCastling && blackToMove || moveTypeIsEnPassant),
                 this.castlingRights.blackKingside()
-                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                && (moveTypeIsNormalOrPromotion
                     && !(fromFileIndex == 7 && fromRankIndex == 7)
                     && !(toFileIndex == 7 && toRankIndex == 7)
-                    && !(this.toMove == Color.BLACK && movedPiece instanceof King)
-                || moveType == MoveType.CASTLING
-                    && this.toMove != Color.BLACK
-                || moveType == MoveType.EN_PASSANT),
+                    && didBlackKingNotMove
+                || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant),
                 this.castlingRights.blackQueenside()
-                && ((moveType == MoveType.NORMAL || moveType == MoveType.PROMOTION)
+                && (moveTypeIsNormalOrPromotion
                     && !(fromFileIndex == 0 && fromRankIndex == 7)
                     && !(toFileIndex == 0 && toRankIndex == 7)
-                    && !(this.toMove == Color.BLACK && movedPiece instanceof King)
-                || moveType == MoveType.CASTLING
-                    && this.toMove != Color.BLACK
-                || moveType == MoveType.EN_PASSANT)),
+                    && didBlackKingNotMove
+                || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant)),
             move.getEnPassantTarget(),
             this.toMove == Color.WHITE
                 ? Color.BLACK

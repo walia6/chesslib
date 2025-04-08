@@ -2,7 +2,6 @@ package gg.w6.util;
 
 import java.util.regex.Matcher;
 
-import gg.w6.core.Move;
 import gg.w6.core.Position;
 import gg.w6.piece.Bishop;
 import gg.w6.piece.King;
@@ -12,7 +11,7 @@ import gg.w6.piece.Piece;
 import gg.w6.piece.Queen;
 import gg.w6.piece.Rook;
 
-public class MoveGenerator {
+public class Moves {
     public static Move generateMoveFromString(final Position position, final String lan) {
         Coordinate from; // done
         Coordinate to; // done
@@ -25,7 +24,6 @@ public class MoveGenerator {
 
 
 
-        String piece;
         String fromSquare;
         boolean isCapture;
         String toSquare;
@@ -40,7 +38,6 @@ public class MoveGenerator {
     
         if (!matcher.matches()) throw new IllegalArgumentException("Invalid LAN: " + lan);
     
-        piece = matcher.group(1); // null if it's a pawn
         fromSquare = matcher.group(2);
         isCapture = matcher.group(3).equals("x");
         toSquare = matcher.group(4);
@@ -119,4 +116,5 @@ public class MoveGenerator {
         
         return new Move(from, to, movedPiece, capturedPiece, moveType, promotionPiece);
     }
+    
 }

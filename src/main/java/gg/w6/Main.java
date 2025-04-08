@@ -1,10 +1,8 @@
 package gg.w6;
 
-import gg.w6.core.Move;
 import gg.w6.core.Position;
-import gg.w6.util.Coordinate;
-import gg.w6.util.MoveGenerator;
-import gg.w6.util.MoveType;
+import gg.w6.util.Move;
+import gg.w6.util.Moves;
 
 public class Main {
 
@@ -28,7 +26,7 @@ public class Main {
 
         assertThat(startingFEN.equals(starting.generateFEN()));
         // "c2-c4"
-        Move white14 = MoveGenerator.generateMoveFromString(starting, "c2-c4");
+        Move white14 = Moves.generateMoveFromString(starting, "c2-c4");
 
         Position newPosition = starting.applyTo(white14);
 

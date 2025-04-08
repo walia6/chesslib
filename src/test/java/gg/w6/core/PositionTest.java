@@ -4,7 +4,8 @@ import gg.w6.util.CastlingRights;
 import gg.w6.util.Color;
 import gg.w6.util.Coordinate;
 import gg.w6.util.File;
-import gg.w6.util.MoveGenerator;
+import gg.w6.util.Move;
+import gg.w6.util.Moves;
 import gg.w6.util.Rank;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -260,7 +261,7 @@ class PositionTest {
         Position position = Position.valueOf(starting);
 
         for (StringTuple stringTuple : moveToResultingPosition) {
-            final Move move = MoveGenerator.generateMoveFromString(position, stringTuple.getX());
+            final Move move = Moves.generateMoveFromString(position, stringTuple.getX());
             position = position.applyTo(move);
             assertEquals(stringTuple.getY(), position.generateFEN(), new Supplier<String>() {
 
