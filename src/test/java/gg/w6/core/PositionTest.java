@@ -262,13 +262,15 @@ class PositionTest {
 
         for (StringTuple stringTuple : moveToResultingPosition) {
             final Move move = Moves.generateMoveFromString(position, stringTuple.getX());
+            final Position oldPosition = position;
             position = position.applyTo(move);
+            
             assertEquals(stringTuple.getY(), position.generateFEN(), new Supplier<String>() {
 
                 @Override
                 public String get() {
 
-                    return stringTuple.getX();
+                    return stringTuple.getX() + "\n Is capture? " + Moves.isCapture(move, oldPosition) + "\n Previous Position: " + oldPosition.generateFEN() + "\n toSquarePiece? " + oldPosition.getSquare(move.getTo()).getPiece() + "\nFrom? " + move.getFrom() + "\nTo?" + move.getTo();
                 }
                 
             });

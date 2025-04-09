@@ -12,6 +12,7 @@ import gg.w6.util.Coordinate;
 import gg.w6.util.File;
 import gg.w6.util.Move;
 import gg.w6.util.MoveType;
+import gg.w6.util.Moves;
 import gg.w6.util.Rank;
 
 /**
@@ -456,7 +457,7 @@ public class Position {
         final int toRankIndex = move.getTo().getRank().ordinal();
 
         final MoveType moveType = move.getMoveType();
-        final Piece movedPiece = move.getMovedPiece();
+        final Piece movedPiece = squares[fromFileIndex][fromRankIndex].getPiece();
         
         switch (move.getMoveType()) {
             case NORMAL -> {
@@ -535,11 +536,11 @@ public class Position {
                     && !(toFileIndex == 0 && toRankIndex == 7)
                     && didBlackKingNotMove
                 || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant)),
-            move.getEnPassantTarget(),
+            Moves.getEnPassantTarget(move, this),
             this.toMove == Color.WHITE
                 ? Color.BLACK
                 : Color.WHITE,
-            move.isPawnMove() || move.isCapture()
+            Moves.isPawnMove(move, this) || Moves.isCapture(move, this)
                 ? 0
                 : this.halfMoveClock + 1,
             this.toMove == Color.BLACK

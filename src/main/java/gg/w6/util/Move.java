@@ -1,24 +1,18 @@
 package gg.w6.util;
 
-import gg.w6.piece.Pawn;
 import gg.w6.piece.Piece;
 
 public class Move {
 
     private final Coordinate from;
     private final Coordinate to;
-    private final Piece movedPiece;
-    private final Piece capturedPiece;
     private final MoveType moveType;
     private final Piece promotionPiece;
 
     Move (final Coordinate from, final Coordinate to,
-            final Piece movedPiece, final Piece capturedPiece,
             final MoveType moveType, final Piece promotionPiece) {
         this.from = from;
         this.to = to;
-        this.movedPiece = movedPiece;
-        this.capturedPiece = capturedPiece;
         this.moveType = moveType;
         this.promotionPiece = promotionPiece;
     }
@@ -31,14 +25,6 @@ public class Move {
         return to;
     }
 
-    public Piece getMovedPiece() {
-        return movedPiece;
-    }
-
-    public Piece getCapturedPiece() {
-        return capturedPiece;
-    }
-
     public MoveType getMoveType() {
         return moveType;
     }
@@ -46,33 +32,30 @@ public class Move {
     public Piece getPromotionPiece() {
         return promotionPiece;
     }
-
-    public boolean isCapture() {
-        return this.capturedPiece != null;
+    
+    @Override
+    public String toString() {
+        return "From: " + from + " To: " + to;
     }
 
-    public boolean isPawnMove() {
-        return this.movedPiece instanceof Pawn;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Move other = (Move) obj;
+        return from.equals(other.from)
+            && to.equals(other.to)
+            && moveType == other.moveType
+            && (promotionPiece == null ? other.promotionPiece == null : promotionPiece.equals(other.promotionPiece));
     }
 
-    public boolean isPawnDoublePush() {
-        return 
-            this.movedPiece instanceof Pawn
-            && this.from.getFile() == this.to.getFile()
-            && Math.abs(this.from.getRank().ordinal()
-                    - this.to.getRank().ordinal()) == 2;
-    }
+    @Override
+    public int hashCode() {
+        int result = from.hashCode();
+        result = 31 * result + to.hashCode();
+        result = 31 * result + moveType.hashCode();
+        result = 31 * result + (promotionPiece != null ? promotionPiece.hashCode() : 0);
+        return result;
+}
 
-    public Coordinate getEnPassantTarget() {
-        if (!(movedPiece instanceof Pawn)) return null;
-    
-        int fromRankIndex = from.getRank().ordinal();
-        int toRankIndex = to.getRank().ordinal();
-    
-        if (Math.abs(fromRankIndex - toRankIndex) != 2) return null;
-    
-        return Coordinate.valueOf(from.getFile().ordinal(), (fromRankIndex + toRankIndex) / 2);
-    }
-    
-    
 }

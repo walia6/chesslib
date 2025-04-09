@@ -2,6 +2,7 @@ package gg.w6.piece;
 
 import gg.w6.util.Color;
 import gg.w6.util.Offset;
+import gg.w6.util.PromotionCandidate;
 
 /**
  * Represents a Bishop piece.
@@ -14,6 +15,7 @@ import gg.w6.util.Offset;
  * Offset[] offsets = bishop.getOffsets(); // returns the diagonal movement offsets
  * }</pre>
  */
+@PromotionCandidate
 public class Bishop extends Rider{
 
     private static final char WHITE_LETTER = 'B';

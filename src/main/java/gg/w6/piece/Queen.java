@@ -2,6 +2,7 @@ package gg.w6.piece;
 
 import gg.w6.util.Color;
 import gg.w6.util.Offset;
+import gg.w6.util.PromotionCandidate;
 
 /**
  * Represents a Queen piece in chess.
@@ -14,6 +15,7 @@ import gg.w6.util.Offset;
  * Offset[] offsets = queen.getOffsets(); // returns the movement offsets for the Queen
  * }</pre>
  */
+@PromotionCandidate
 public class Queen extends Rider {
 
     private static final char WHITE_LETTER = 'Q';

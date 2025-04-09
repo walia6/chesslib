@@ -113,6 +113,10 @@ public class Square {
         return piece;
     }
 
+    public boolean isEmpty() {
+        return this.piece == null;
+    }
+
     /**
      * Returns the color of this square based on its coordinate.
      * @return The color of the square (black or white).
