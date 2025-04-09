@@ -18,9 +18,6 @@ import gg.w6.piece.Rook;
 
 public final class Moves {
 
-    private Moves() {
-    } // ensure non-instantiability
-
     public static boolean isCapture(final Move move, final Position position) {
         return position.getSquare(move.getTo()).getPiece() != null
                 || move.getMoveType() == MoveType.EN_PASSANT;
@@ -129,9 +126,9 @@ public final class Moves {
         return new Move(from, to, moveType, promotionPiece);
     }
 
-    public static Set<Move> generatePseudoLegalMoves(Position position) {
+    public static Set<Move> generatePseudoLegalMoves(final Position position) {
 
-        Set<Move> moves = new HashSet<>();
+        final Set<Move> moves = new HashSet<>();
 
         final CastlingRights castlingRights = position.getCastlingRights();
 
@@ -166,8 +163,8 @@ public final class Moves {
                 if (piece instanceof Rider) {
                     final Rider rider = (Rider) piece;
                     final int range = rider.getRange();
-                    for (Offset offset : rider.getOffsets()) {
-                        for (Coordinate target : offset.extendFrom(origin, range)) {
+                    for (final Offset offset : rider.getOffsets()) {
+                        for (final Coordinate target : offset.extendFrom(origin, range)) {
                             final Piece targetPiece = position.getSquare(target).getPiece();
 
                             if (!castleCheck) {
@@ -266,48 +263,44 @@ public final class Moves {
         return moves;
     }
 
-    private static void checkPawnThreatsAndAddCastlingMoves(Position position, Set<Move> moves,
-            boolean canWhiteCastleKingside, boolean canWhiteCastleQueenside,
-            boolean canBlackCastleKingside, boolean canBlackCastleQueenside) {
+    private static void checkPawnThreatsAndAddCastlingMoves(final Position position, final Set<Move> moves,
+            final boolean canWhiteCastleKingside, final boolean canWhiteCastleQueenside,
+            final boolean canBlackCastleKingside, final boolean canBlackCastleQueenside) {
 
         Move move;
 
         move = checkPawnThreatsForCastling(position, Color.WHITE, canWhiteCastleKingside,
                 new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 0, 1, 6); // White kingside
-        if (move != null)
-            moves.add(move);
+        if (move != null) moves.add(move);
 
         move = checkPawnThreatsForCastling(position, Color.WHITE, canWhiteCastleQueenside,
                 new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 0, 1, 2); // White queenside
-        if (move != null)
-            moves.add(move);
+        if (move != null) moves.add(move);
 
         move = checkPawnThreatsForCastling(position, Color.BLACK, canBlackCastleKingside,
                 new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 7, 6, 6); // Black kingside
-        if (move != null)
-            moves.add(move);
+        if (move != null) moves.add(move);
 
         move = checkPawnThreatsForCastling(position, Color.BLACK, canBlackCastleQueenside,
                 new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 7, 6, 2); // Black queenside
-        if (move != null)
-            moves.add(move);
+        if (move != null) moves.add(move);
     }
 
-    private static Move checkPawnThreatsForCastling(Position position, Color color, boolean canCastle,
-            int[] emptyFileIndices, int[] pawnCheckFiles, int rank, int pawnRankOffset, int targetFile) {
+    private static Move checkPawnThreatsForCastling(final Position position, final Color color, final boolean canCastle,
+        final int[] emptyFileIndices, final int[] pawnCheckFiles, final int rank, final int pawnRankOffset, final int targetFile) {
 
         if (!canCastle || position.getToMove() != color)
             return null;
 
-        for (int file : emptyFileIndices) {
+        for (final int file : emptyFileIndices) {
             if (!position.getSquare(Coordinate.valueOf(file, rank)).isEmpty())
                 return null;
         }
 
-        int pawnRank = rank + (color == Color.WHITE ? 1 : -1);
+        final int pawnRank = rank + (color == Color.WHITE ? 1 : -1);
 
-        for (int file : pawnCheckFiles) {
-            Piece piece = position.getSquare(file, pawnRank).getPiece();
+        for (final int file : pawnCheckFiles) {
+            final Piece piece = position.getSquare(file, pawnRank).getPiece();
             if (piece != null && piece.getColor() != color)
                 return null;
         }
@@ -315,36 +308,9 @@ public final class Moves {
         return new Move(Coordinate.valueOf(4, rank), Coordinate.valueOf(targetFile, rank), MoveType.CASTLING, null);
     }
 
-    private static void addPawnMovePromotionPossible(Set<Move> moves, Color pawnColor,
-            Coordinate from, Coordinate to) {
-
-        if (to.getRank() == (pawnColor == Color.WHITE ? Rank.EIGHT : Rank.ONE)) {
-            for (final Piece promotionPiece : Pieces.promotionCandidates.get(pawnColor)) {
-                moves.add(new Move(from, to, MoveType.PROMOTION, promotionPiece));
-            }
-        } else {
-            moves.add(new Move(from, to, MoveType.NORMAL, null));
-        }
-    }
-
-    private static Set<Move> generateLegalMoves(Position position) {
-        Set<Move> moves = new HashSet<>();
-        for (Move move : generatePseudoLegalMoves(position)) {
-            Position newPosition = position.applyTo(move);
-            if (PositionValidator.getLegality(newPosition).isLegal()) {
-                moves.add(move);
-            }
-
-        }
-
-        return moves;
-    }
-
     public static Set<Move> getLegalMoves(final Position position) {
         return generateLegalMoves(position);
     }
-
-    // takes a move, and the position before the move was amde
 
     public static boolean isKingToMoveInCheck(final Position position) {
         for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
@@ -405,9 +371,7 @@ public final class Moves {
                 }
             }
         }
-
         return false;
-
     }
 
     public static String generateSAN(final Move move, final Position position) {
@@ -483,6 +447,35 @@ public final class Moves {
         appendSANSuffix(sanStringBuilder, move, position.applyTo(move));
 
         return sanStringBuilder.toString();
+    }
+
+
+
+    private static void addPawnMovePromotionPossible(final Set<Move> moves, final Color pawnColor,
+            final Coordinate from, final Coordinate to) {
+
+        if (to.getRank() == (pawnColor == Color.WHITE ? Rank.EIGHT : Rank.ONE)) {
+            for (final Piece promotionPiece : Pieces.promotionCandidates.get(pawnColor)) {
+                moves.add(new Move(from, to, MoveType.PROMOTION, promotionPiece));
+            }
+        } else {
+            moves.add(new Move(from, to, MoveType.NORMAL, null));
+        }
+    }
+
+    // takes a move, and the position before the move was amde
+
+    private static Set<Move> generateLegalMoves(final Position position) {
+        final Set<Move> moves = new HashSet<>();
+        for (final Move move : generatePseudoLegalMoves(position)) {
+            final Position newPosition = position.applyTo(move);
+            if (PositionValidator.getLegality(newPosition).isLegal()) {
+                moves.add(move);
+            }
+
+        }
+
+        return moves;
     }
 
     private static void appendSANSuffix(final StringBuilder sanStringBuilder, final Move move,
@@ -563,5 +556,8 @@ public final class Moves {
 
         return false;
     }
+
+    private Moves() {
+    } // ensure non-instantiability
 
 }
