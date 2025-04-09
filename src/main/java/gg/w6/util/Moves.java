@@ -183,7 +183,10 @@ public final class Moves {
                 if (piece.getColor() != toMove) {
                     if (toMove == Color.WHITE && canWhiteCastleKingside || toMove == Color.WHITE && canWhiteCastleQueenside
                             || toMove == Color.BLACK && canBlackCastleKingside || toMove == Color.BLACK && canBlackCastleQueenside) {
-                        castleCheck = true;
+                        
+                        if (!(piece instanceof Pawn)) {
+                            castleCheck = true;
+                        } else continue;
                     } else {
                         continue;
                     }
@@ -226,77 +229,37 @@ public final class Moves {
                     final int direction = toMove == Color.WHITE ? 1 : -1;
                     
                     // one and 2 square push
-                    if (!castleCheck) {
-                        if (position.getSquare(fileIndex, rankIndex + direction)
-                                .getPiece() == null) {
-                            addPawnMovePromotionPossible(moves, toMove, origin,
+                    if (position.getSquare(fileIndex, rankIndex + direction)
+                            .getPiece() == null) {
+                        addPawnMovePromotionPossible(moves, toMove, origin,
+                                Coordinate.valueOf(fileIndex,
+                                rankIndex + direction));
+                        if (rankIndex == 
+                                ((toMove == Color.WHITE) ? 1 : Rank.COUNT - 2)
+                                && position.getSquare(fileIndex,
+                                rankIndex + direction * 2).getPiece() == null) {
+                            moves.add(new Move(origin,
                                     Coordinate.valueOf(fileIndex,
-                                    rankIndex + direction));
-                            if (rankIndex == 
-                                    ((toMove == Color.WHITE) ? 1 : Rank.COUNT - 2)
-                                    && position.getSquare(fileIndex,
-                                    rankIndex + direction * 2).getPiece() == null) {
-                                moves.add(new Move(origin,
-                                        Coordinate.valueOf(fileIndex,
-                                        rankIndex + direction * 2),
-                                        MoveType.NORMAL, null));
-                            }
+                                    rankIndex + direction * 2),
+                                    MoveType.NORMAL, null));
                         }
                     }
 
                     // non-enpassant capture
                     if (fileIndex != 7) {
-                        if (!castleCheck) {
-                            if (position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece().getColor() != toMove) {
-                                addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex + 1, rankIndex + direction));
-                            }
-                        } else {
-                            Coordinate target = Coordinate.valueOf(fileIndex + 1, rankIndex + direction);
-                            if (toMove == Color.WHITE) {
-                                if (canWhiteCastleKingside) {
-                                    canWhiteCastleKingside = !target.equals(Coordinate.valueOf(5, 0)) && !target.equals(Coordinate.valueOf(6, 0));
-                                }
-                                if (canWhiteCastleQueenside) {
-                                    canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(3, 0)) && !target.equals(Coordinate.valueOf(2, 0));
-                                }
-                            } else {
-                                if (canBlackCastleKingside) {
-                                    canBlackCastleKingside = !target.equals(Coordinate.valueOf(5, 7)) && !target.equals(Coordinate.valueOf(6, 7));
-                                }
-                                if (canBlackCastleQueenside) {
-                                    canBlackCastleQueenside = !target.equals(Coordinate.valueOf(3, 7)) && !target.equals(Coordinate.valueOf(2, 7));
-                                }   
-                            }
+                        if (position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece().getColor() != toMove) {
+                            addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex + 1, rankIndex + direction));
                         }
                     }     
                     if (fileIndex != 0) {
-                        if (!castleCheck) {
-                            if (position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece().getColor() != toMove) {
-                                addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex - 1, rankIndex + direction));
-                            }
-                        } else {
-                            Coordinate target = Coordinate.valueOf(fileIndex - 1, rankIndex + direction);
-                            if (toMove == Color.WHITE) {
-                                if (canWhiteCastleKingside) {
-                                    canWhiteCastleKingside = !target.equals(Coordinate.valueOf(5, 0)) && !target.equals(Coordinate.valueOf(6, 0));
-                                }
-                                if (canWhiteCastleQueenside) {
-                                    canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(3, 0)) && !target.equals(Coordinate.valueOf(2, 0));
-                                }
-                            } else {
-                                if (canBlackCastleKingside) {
-                                    canBlackCastleKingside = !target.equals(Coordinate.valueOf(5, 7)) && !target.equals(Coordinate.valueOf(6, 7));
-                                }
-                                if (canBlackCastleQueenside) {
-                                    canBlackCastleQueenside = !target.equals(Coordinate.valueOf(3, 7)) && !target.equals(Coordinate.valueOf(2, 7));
-                                }   
-                            }
+                        if (position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece().getColor() != toMove) {
+                            addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex - 1, rankIndex + direction));
                         }
                     }
 
                     // enpassant capture
 
-                    if (!castleCheck) {
+                    
                     if (
                             rankIndex
                             == (toMove == Color.WHITE ? Rank.COUNT - 4 : 3)
@@ -307,7 +270,7 @@ public final class Moves {
                         moves.add(new Move(origin,
                                 position.getEnPassantTarget(),
                                 MoveType.EN_PASSANT, null));
-                    }}
+                    }
 
 
 
