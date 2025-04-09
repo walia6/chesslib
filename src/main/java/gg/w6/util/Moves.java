@@ -182,7 +182,7 @@ public final class Moves {
                 // if its not the pieces turn, let's just see if it is attacking a square the king would move thru or into for castling.
                 if (piece.getColor() != toMove) {
                     if (toMove == Color.WHITE && canWhiteCastleKingside || toMove == Color.WHITE && canWhiteCastleQueenside
-                            || toMove == Color.BLACK && canBlackCastleKingside || toMove == Color.WHITE && canBlackCastleQueenside) {
+                            || toMove == Color.BLACK && canBlackCastleKingside || toMove == Color.BLACK && canBlackCastleQueenside) {
                         castleCheck = true;
                     } else {
                         continue;
@@ -205,17 +205,17 @@ public final class Moves {
                             } else {
                                 if (toMove == Color.WHITE) {
                                     if (canWhiteCastleKingside) {
-                                        canWhiteCastleKingside = !target.equals(Coordinate.valueOf(5, 0)) && !target.equals(Coordinate.valueOf(6, 0));
+                                        canWhiteCastleKingside = !target.equals(Coordinate.valueOf(4, 0)) && !target.equals(Coordinate.valueOf(5, 0)) && !target.equals(Coordinate.valueOf(6, 0));
                                     }
                                     if (canWhiteCastleQueenside) {
-                                        canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(3, 0)) && !target.equals(Coordinate.valueOf(2, 0));
+                                        canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(4, 0)) && !target.equals(Coordinate.valueOf(3, 0)) && !target.equals(Coordinate.valueOf(2, 0));
                                     }
                                 } else {
                                     if (canBlackCastleKingside) {
-                                        canBlackCastleKingside = !target.equals(Coordinate.valueOf(5, 7)) && !target.equals(Coordinate.valueOf(6, 7));
+                                        canBlackCastleKingside = !target.equals(Coordinate.valueOf(4, 7)) && !target.equals(Coordinate.valueOf(5, 7)) && !target.equals(Coordinate.valueOf(6, 7));
                                     }
                                     if (canBlackCastleQueenside) {
-                                        canBlackCastleQueenside = !target.equals(Coordinate.valueOf(3, 7)) && !target.equals(Coordinate.valueOf(2, 7));
+                                        canBlackCastleQueenside = !target.equals(Coordinate.valueOf(4, 7)) && !target.equals(Coordinate.valueOf(3, 7)) && !target.equals(Coordinate.valueOf(2, 7));
                                     }   
                                 }
                             }
@@ -245,9 +245,11 @@ public final class Moves {
                     }
 
                     // non-enpassant capture
-                    if (fileIndex != 7 && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece().getColor() != toMove) {
+                    if (fileIndex != 7) {
                         if (!castleCheck) {
-                            addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex + 1, rankIndex + direction));
+                            if (position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece().getColor() != toMove) {
+                                addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex + 1, rankIndex + direction));
+                            }
                         } else {
                             Coordinate target = Coordinate.valueOf(fileIndex + 1, rankIndex + direction);
                             if (toMove == Color.WHITE) {
@@ -267,9 +269,11 @@ public final class Moves {
                             }
                         }
                     }     
-                    if (fileIndex != 0 && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece().getColor() != toMove) {
+                    if (fileIndex != 0) {
                         if (!castleCheck) {
-                            addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex - 1, rankIndex + direction));
+                            if (position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece().getColor() != toMove) {
+                                addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex - 1, rankIndex + direction));
+                            }
                         } else {
                             Coordinate target = Coordinate.valueOf(fileIndex - 1, rankIndex + direction);
                             if (toMove == Color.WHITE) {
@@ -320,7 +324,19 @@ public final class Moves {
         if (canWhiteCastleKingside && position.getToMove() == Color.WHITE) {
             if (position.getSquare(Coordinate.valueOf(5, 0)).isEmpty() &&
                 position.getSquare(Coordinate.valueOf(6, 0)).isEmpty()) {
-                moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(6, 0), MoveType.CASTLING, null));
+
+                // Let's make sure there are no black pawns on the second rank files d thru g inclusive
+                boolean passedPawnCheck = true;
+                for (int fileIndex = 3; fileIndex <= 6; fileIndex++) {
+                    final Piece piece = position.getSquare(fileIndex, 1).getPiece();
+                    if (piece == null) continue;
+                    if (piece.getColor() != Color.BLACK) continue;
+                    if (!(piece instanceof Pawn)) continue;
+
+                    passedPawnCheck = false;
+                }
+
+                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(6, 0), MoveType.CASTLING, null));
             }
         }
 
@@ -329,7 +345,20 @@ public final class Moves {
             if (position.getSquare(Coordinate.valueOf(1, 0)).isEmpty() &&
                 position.getSquare(Coordinate.valueOf(2, 0)).isEmpty() &&
                 position.getSquare(Coordinate.valueOf(3, 0)).isEmpty()) {
-                moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(2, 0), MoveType.CASTLING, null));
+
+                // Let's make sure there are no black pawns on the second rank files c thru f inclusive
+                boolean passedPawnCheck = true;
+                for (int fileIndex = 2; fileIndex <= 5; fileIndex++) {
+                    final Piece piece = position.getSquare(fileIndex, 1).getPiece();
+                    if (piece == null) continue;
+                    if (piece.getColor() != Color.BLACK) continue;
+                    if (!(piece instanceof Pawn)) continue;
+
+                    passedPawnCheck = false;
+                }
+
+
+                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(2, 0), MoveType.CASTLING, null));
             }
         }
 
@@ -337,7 +366,21 @@ public final class Moves {
         if (canBlackCastleKingside && position.getToMove() == Color.BLACK) {
             if (position.getSquare(Coordinate.valueOf(5, 7)).isEmpty() &&
                 position.getSquare(Coordinate.valueOf(6, 7)).isEmpty()) {
-                moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(6, 7), MoveType.CASTLING, null));
+
+                
+                // Let's make sure there are no white pawns on the seventh rank files d thru g inclusive
+                boolean passedPawnCheck = true;
+                for (int fileIndex = 3; fileIndex <= 6; fileIndex++) {
+                    final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
+                    if (piece == null) continue;
+                    if (piece.getColor() != Color.WHITE) continue;
+                    if (!(piece instanceof Pawn)) continue;
+
+                    passedPawnCheck = false;
+                }
+
+
+                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(6, 7), MoveType.CASTLING, null));
             }
         }
 
@@ -346,7 +389,19 @@ public final class Moves {
             if (position.getSquare(Coordinate.valueOf(1, 7)).isEmpty() &&
                 position.getSquare(Coordinate.valueOf(2, 7)).isEmpty() &&
                 position.getSquare(Coordinate.valueOf(3, 7)).isEmpty()) {
-                moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(2, 7), MoveType.CASTLING, null));
+
+
+                // Let's make sure there are no white pawns on the seventh rank files d thru g inclusive
+                boolean passedPawnCheck = true;
+                for (int fileIndex = 2; fileIndex <= 5; fileIndex++) {
+                    final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
+                    if (piece == null) continue;
+                    if (piece.getColor() != Color.WHITE) continue;
+                    if (!(piece instanceof Pawn)) continue;
+
+                    passedPawnCheck = false;
+                }
+                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(2, 7), MoveType.CASTLING, null));
             }
         }
 
