@@ -153,19 +153,14 @@ public final class Moves {
                 // if its not the pieces turn, let's just see if it is attacking a square the
                 // king would move thru or into for castling.
                 if (piece.getColor() != toMove) {
-                    if (toMove == Color.WHITE && canWhiteCastleKingside
-                            || toMove == Color.WHITE && canWhiteCastleQueenside
-                            || toMove == Color.BLACK && canBlackCastleKingside
-                            || toMove == Color.BLACK && canBlackCastleQueenside) {
-
-                        if (!(piece instanceof Pawn)) {
-                            castleCheck = true;
-                        } else
-                            continue;
-                    } else {
+                    if ((piece instanceof Pawn) || 
+                            ((toMove != Color.WHITE || (!canWhiteCastleKingside && !canWhiteCastleQueenside)) 
+                            && (toMove != Color.BLACK || (!canBlackCastleKingside && !canBlackCastleQueenside)))) {
                         continue;
                     }
+                    castleCheck = true;
                 }
+                
 
                 final Coordinate origin = Coordinate.valueOf(fileIndex, rankIndex);
                 if (piece instanceof Rider) {
@@ -180,29 +175,26 @@ public final class Moves {
                                     moves.add(new Move(origin, target, MoveType.NORMAL, null));
                                 }
                             } else {
-                                if (toMove == Color.WHITE) {
-                                    if (canWhiteCastleKingside) {
+                                    if (toMove == Color.WHITE && canWhiteCastleKingside) {
                                         canWhiteCastleKingside = !target.equals(Coordinate.valueOf(4, 0))
                                                 && !target.equals(Coordinate.valueOf(5, 0))
                                                 && !target.equals(Coordinate.valueOf(6, 0));
                                     }
-                                    if (canWhiteCastleQueenside) {
+                                    if (toMove == Color.WHITE && canWhiteCastleQueenside) {
                                         canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(4, 0))
                                                 && !target.equals(Coordinate.valueOf(3, 0))
                                                 && !target.equals(Coordinate.valueOf(2, 0));
                                     }
-                                } else {
-                                    if (canBlackCastleKingside) {
+                                    if (toMove == Color.BLACK && canBlackCastleKingside) {
                                         canBlackCastleKingside = !target.equals(Coordinate.valueOf(4, 7))
                                                 && !target.equals(Coordinate.valueOf(5, 7))
                                                 && !target.equals(Coordinate.valueOf(6, 7));
                                     }
-                                    if (canBlackCastleQueenside) {
+                                    if (toMove == Color.BLACK && canBlackCastleQueenside) {
                                         canBlackCastleQueenside = !target.equals(Coordinate.valueOf(4, 7))
                                                 && !target.equals(Coordinate.valueOf(3, 7))
                                                 && !target.equals(Coordinate.valueOf(2, 7));
                                     }
-                                }
                             }
                             if (targetPiece != null)
                                 break;
@@ -267,7 +259,8 @@ public final class Moves {
             }
         }
 
-        checkPawnThreatsAndAddCastlingMoves(position, moves, canWhiteCastleKingside, canWhiteCastleQueenside, canBlackCastleKingside,
+        checkPawnThreatsAndAddCastlingMoves(position, moves, canWhiteCastleKingside, canWhiteCastleQueenside,
+                canBlackCastleKingside,
                 canBlackCastleQueenside);
 
         return moves;
@@ -421,26 +414,15 @@ public final class Moves {
 
         final StringBuilder sanStringBuilder = new StringBuilder();
 
-        boolean DEBUG = false;
-
-        if (position.getSquare(move.getFrom()).getPiece() instanceof Rook && move.getTo() == Coordinate.valueOf("e3")) {
-            // DEBUG = true;
-            // System.out.println("DEBUGGING!");
-        }
-
         if (move.getMoveType() == MoveType.CASTLING) {
-            switch (move.getTo().getFile()) {
-                case G: // kingside
-                    sanStringBuilder.append("O-O");
-                    break;
-
-                case C: // quenside
-                    sanStringBuilder.append("O-O-O");
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("Invalid castling destination " + move.getTo() + ".");
-            }
+            sanStringBuilder.append(
+                switch (move.getTo().getFile()) {
+                    case G -> "O-O";
+                    case C -> "O-O-O";
+                    default -> throw new IllegalArgumentException("Invalid castling destination " + move.getTo() + ".");
+                }
+            );
+            
             appendSANSuffix(sanStringBuilder, move, position.applyTo(move));
             return sanStringBuilder.toString();
         }
@@ -479,27 +461,13 @@ public final class Moves {
             final boolean rankIsAmbiguous = Moves.isRankAmbiguous(move, position);
 
             if (isPieceAmbiguous(move, position)) {
-                if (fileIsAmbiguous && !rankIsAmbiguous) {
-                    if (DEBUG) {
-                        System.out.println("fileIsAmbiguous && !rankIsAmbiguous");
-                    }
-                    sanStringBuilder.append(move.getFrom().getRank());
-                } else if (!fileIsAmbiguous && rankIsAmbiguous) {
-                    if (DEBUG) {
-                        System.out.println("!fileIsAmbiguous && rankIsAmbiguous");
-                    }
-                    sanStringBuilder.append(move.getFrom().getFile());
-                } else if (fileIsAmbiguous && rankIsAmbiguous) {
-                    if (DEBUG) {
-                        System.out.println("fileIsAmbiguous && rankIsAmbiguous");
-                    }
+                if (fileIsAmbiguous && rankIsAmbiguous) {
                     sanStringBuilder.append(move.getFrom());
-                } else {
-                    if (DEBUG) {
-                        System.out.println("The Piece is the only ambiguity");
-                    }
+                } else if (!(fileIsAmbiguous && !rankIsAmbiguous)) {
                     sanStringBuilder.append(move.getFrom().getFile());
-                }
+                } else {
+                    sanStringBuilder.append(move.getFrom().getRank());
+                } 
             }
 
             // ['x']
@@ -519,8 +487,7 @@ public final class Moves {
 
     private static void appendSANSuffix(final StringBuilder sanStringBuilder, final Move move,
             final Position position) {
-        if (!Moves.isKingToMoveInCheck(position))
-            return;
+        if (!Moves.isKingToMoveInCheck(position)) return;
         sanStringBuilder.append(Moves.getLegalMoves(position).isEmpty() ? "#" : "+");
     }
 
