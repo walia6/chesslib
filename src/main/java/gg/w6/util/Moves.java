@@ -18,13 +18,13 @@ import gg.w6.piece.Rook;
 
 public final class Moves {
 
-    private Moves() {} // ensure non-instantiability
+    private Moves() {
+    } // ensure non-instantiability
 
     public static boolean isCapture(final Move move, final Position position) {
         return position.getSquare(move.getTo()).getPiece() != null
-            || move.getMoveType() == MoveType.EN_PASSANT;
+                || move.getMoveType() == MoveType.EN_PASSANT;
     }
-    
 
     public static boolean isPawnMove(final Move move, final Position position) {
         return position.getSquare(move.getFrom()).getPiece() instanceof Pawn;
@@ -34,7 +34,8 @@ public final class Moves {
             final Position position) {
         final Piece movedPiece = position.getSquare(move.getFrom()).getPiece();
 
-        if (!(movedPiece instanceof Pawn)) return null;
+        if (!(movedPiece instanceof Pawn))
+            return null;
 
         final Coordinate from = move.getFrom();
 
@@ -43,7 +44,7 @@ public final class Moves {
 
         return Math.abs(fromRankIndex - toRankIndex) == 2
                 ? Coordinate.valueOf(from.getFile().ordinal(),
-                    (fromRankIndex + toRankIndex) / 2)
+                        (fromRankIndex + toRankIndex) / 2)
                 : null;
     }
 
@@ -53,13 +54,11 @@ public final class Moves {
         final Coordinate from = move.getFrom();
         final Coordinate to = move.getTo();
 
-        return
-            movedPiece instanceof Pawn
-            && from.getFile() == to.getFile()
-            && Math.abs(from.getRank().ordinal()
-                    - to.getRank().ordinal()) == 2;
+        return movedPiece instanceof Pawn
+                && from.getFile() == to.getFile()
+                && Math.abs(from.getRank().ordinal()
+                        - to.getRank().ordinal()) == 2;
     }
-
 
     public static Move generateMoveFromString(final Position position,
             final String lan) {
@@ -69,57 +68,36 @@ public final class Moves {
         MoveType moveType; // done
         Piece promotionPiece;
 
-
-
-
-
         String fromSquare;
         boolean isCapture;
         String toSquare;
-        String promotion; 
+        String promotion;
 
-
-
-
-
-        final String regex =
-                "([NBRQK])?([a-h][1-8])([-x])([a-h][1-8])([NBRQK])?";
+        final String regex = "([NBRQK])?([a-h][1-8])([-x])([a-h][1-8])([NBRQK])?";
         final Matcher matcher = Pattern.compile(regex).matcher(lan);
-    
-        if (!matcher.matches()) throw new IllegalArgumentException(
-                "Invalid LAN: " + lan);
-    
+
+        if (!matcher.matches())
+            throw new IllegalArgumentException(
+                    "Invalid LAN: " + lan);
+
         fromSquare = matcher.group(2);
         isCapture = matcher.group(3).equals("x");
         toSquare = matcher.group(4);
         promotion = matcher.group(5); // null if no promotion
 
-        /*
-        if (lan.equals("e1-g1")) {
-            toSquare = "h1";
-        } else if (lan.equals("e1-c1")) {
-            toSquare = "a1";
-        } else if (lan.equals("e8-g8")) {
-            toSquare = "h8";
-        } else if (lan.equals("e8-c8")) {
-            toSquare = "a8";
-        }*/
-
-        
-
         from = Coordinate.valueOf(fromSquare);
         to = Coordinate.valueOf(toSquare);
         movedPiece = position.getSquare(from).getPiece();
 
-        if (movedPiece instanceof King && 
-                (lan.equals("e1-g1") 
-                || lan.equals("e1-c1") 
-                || lan.equals("e8-g8") 
-                || lan.equals("e8-c8"))) {
+        if (movedPiece instanceof King &&
+                (lan.equals("e1-g1")
+                        || lan.equals("e1-c1")
+                        || lan.equals("e8-g8")
+                        || lan.equals("e8-c8"))) {
             moveType = MoveType.CASTLING;
         } else if (movedPiece instanceof Pawn && promotion != null) {
             moveType = MoveType.PROMOTION;
-        } else if (movedPiece instanceof Pawn && isCapture 
+        } else if (movedPiece instanceof Pawn && isCapture
                 && position.getSquare(to).getPiece() == null) {
             moveType = MoveType.EN_PASSANT;
         } else {
@@ -148,14 +126,6 @@ public final class Moves {
             promotionPiece = null;
         }
 
-        
-
-
-
-
-
-
-        
         return new Move(from, to, moveType, promotionPiece);
     }
 
@@ -174,105 +144,119 @@ public final class Moves {
             for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
                 final Square square = position.getSquare(fileIndex, rankIndex);
                 final Piece piece = square.getPiece();
-                if (piece == null) continue;
+                if (piece == null)
+                    continue;
                 final Color toMove = position.getToMove();
 
                 boolean castleCheck = false;
 
-                // if its not the pieces turn, let's just see if it is attacking a square the king would move thru or into for castling.
+                // if its not the pieces turn, let's just see if it is attacking a square the
+                // king would move thru or into for castling.
                 if (piece.getColor() != toMove) {
-                    if (toMove == Color.WHITE && canWhiteCastleKingside || toMove == Color.WHITE && canWhiteCastleQueenside
-                            || toMove == Color.BLACK && canBlackCastleKingside || toMove == Color.BLACK && canBlackCastleQueenside) {
-                        
+                    if (toMove == Color.WHITE && canWhiteCastleKingside
+                            || toMove == Color.WHITE && canWhiteCastleQueenside
+                            || toMove == Color.BLACK && canBlackCastleKingside
+                            || toMove == Color.BLACK && canBlackCastleQueenside) {
+
                         if (!(piece instanceof Pawn)) {
                             castleCheck = true;
-                        } else continue;
+                        } else
+                            continue;
                     } else {
                         continue;
                     }
                 }
 
-                final Coordinate origin =
-                        Coordinate.valueOf(fileIndex, rankIndex);
+                final Coordinate origin = Coordinate.valueOf(fileIndex, rankIndex);
                 if (piece instanceof Rider) {
                     final Rider rider = (Rider) piece;
                     final int range = rider.getRange();
                     for (Offset offset : rider.getOffsets()) {
                         for (Coordinate target : offset.extendFrom(origin, range)) {
                             final Piece targetPiece = position.getSquare(target).getPiece();
-            
+
                             if (!castleCheck) {
-                                if (!(targetPiece != null && targetPiece.getColor() == toMove)){
+                                if (!(targetPiece != null && targetPiece.getColor() == toMove)) {
                                     moves.add(new Move(origin, target, MoveType.NORMAL, null));
                                 }
                             } else {
                                 if (toMove == Color.WHITE) {
                                     if (canWhiteCastleKingside) {
-                                        canWhiteCastleKingside = !target.equals(Coordinate.valueOf(4, 0)) && !target.equals(Coordinate.valueOf(5, 0)) && !target.equals(Coordinate.valueOf(6, 0));
+                                        canWhiteCastleKingside = !target.equals(Coordinate.valueOf(4, 0))
+                                                && !target.equals(Coordinate.valueOf(5, 0))
+                                                && !target.equals(Coordinate.valueOf(6, 0));
                                     }
                                     if (canWhiteCastleQueenside) {
-                                        canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(4, 0)) && !target.equals(Coordinate.valueOf(3, 0)) && !target.equals(Coordinate.valueOf(2, 0));
+                                        canWhiteCastleQueenside = !target.equals(Coordinate.valueOf(4, 0))
+                                                && !target.equals(Coordinate.valueOf(3, 0))
+                                                && !target.equals(Coordinate.valueOf(2, 0));
                                     }
                                 } else {
                                     if (canBlackCastleKingside) {
-                                        canBlackCastleKingside = !target.equals(Coordinate.valueOf(4, 7)) && !target.equals(Coordinate.valueOf(5, 7)) && !target.equals(Coordinate.valueOf(6, 7));
+                                        canBlackCastleKingside = !target.equals(Coordinate.valueOf(4, 7))
+                                                && !target.equals(Coordinate.valueOf(5, 7))
+                                                && !target.equals(Coordinate.valueOf(6, 7));
                                     }
                                     if (canBlackCastleQueenside) {
-                                        canBlackCastleQueenside = !target.equals(Coordinate.valueOf(4, 7)) && !target.equals(Coordinate.valueOf(3, 7)) && !target.equals(Coordinate.valueOf(2, 7));
-                                    }   
+                                        canBlackCastleQueenside = !target.equals(Coordinate.valueOf(4, 7))
+                                                && !target.equals(Coordinate.valueOf(3, 7))
+                                                && !target.equals(Coordinate.valueOf(2, 7));
+                                    }
                                 }
                             }
-                            if (targetPiece != null) break;
+                            if (targetPiece != null)
+                                break;
                         }
                     }
                 } else if (piece instanceof Pawn) {
                     final int direction = toMove == Color.WHITE ? 1 : -1;
-                    
+
                     // one and 2 square push
                     if (position.getSquare(fileIndex, rankIndex + direction)
                             .getPiece() == null) {
                         addPawnMovePromotionPossible(moves, toMove, origin,
                                 Coordinate.valueOf(fileIndex,
-                                rankIndex + direction));
-                        if (rankIndex == 
-                                ((toMove == Color.WHITE) ? 1 : Rank.COUNT - 2)
+                                        rankIndex + direction));
+                        if (rankIndex == ((toMove == Color.WHITE) ? 1 : Rank.COUNT - 2)
                                 && position.getSquare(fileIndex,
-                                rankIndex + direction * 2).getPiece() == null) {
+                                        rankIndex + direction * 2).getPiece() == null) {
                             moves.add(new Move(origin,
                                     Coordinate.valueOf(fileIndex,
-                                    rankIndex + direction * 2),
+                                            rankIndex + direction * 2),
                                     MoveType.NORMAL, null));
                         }
                     }
 
                     // non-enpassant capture
                     if (fileIndex != 7) {
-                        if (position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction)).getPiece().getColor() != toMove) {
-                            addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex + 1, rankIndex + direction));
+                        if (position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction))
+                                .getPiece() != null
+                                && position.getSquare(Coordinate.valueOf(fileIndex + 1, rankIndex + direction))
+                                        .getPiece().getColor() != toMove) {
+                            addPawnMovePromotionPossible(moves, toMove, origin,
+                                    Coordinate.valueOf(fileIndex + 1, rankIndex + direction));
                         }
-                    }     
+                    }
                     if (fileIndex != 0) {
-                        if (position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece() != null && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction)).getPiece().getColor() != toMove) {
-                            addPawnMovePromotionPossible(moves, toMove, origin, Coordinate.valueOf(fileIndex - 1, rankIndex + direction));
+                        if (position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction))
+                                .getPiece() != null
+                                && position.getSquare(Coordinate.valueOf(fileIndex - 1, rankIndex + direction))
+                                        .getPiece().getColor() != toMove) {
+                            addPawnMovePromotionPossible(moves, toMove, origin,
+                                    Coordinate.valueOf(fileIndex - 1, rankIndex + direction));
                         }
                     }
 
                     // enpassant capture
 
-                    
-                    if (
-                            rankIndex
-                            == (toMove == Color.WHITE ? Rank.COUNT - 4 : 3)
+                    if (rankIndex == (toMove == Color.WHITE ? Rank.COUNT - 4 : 3)
                             && position.getEnPassantTarget() != null
                             && Math.abs(fileIndex
-                            - position.getEnPassantTarget().getFile().ordinal())
-                            == 1) {
+                                    - position.getEnPassantTarget().getFile().ordinal()) == 1) {
                         moves.add(new Move(origin,
                                 position.getEnPassantTarget(),
                                 MoveType.EN_PASSANT, null));
                     }
-
-
 
                 } else {
                     throw new IllegalStateException("The " + piece.getColor()
@@ -294,81 +278,93 @@ public final class Moves {
         // White kingside (f1, g1)
         if (canWhiteCastleKingside && position.getToMove() == Color.WHITE) {
             if (position.getSquare(Coordinate.valueOf(5, 0)).isEmpty() &&
-                position.getSquare(Coordinate.valueOf(6, 0)).isEmpty()) {
+                    position.getSquare(Coordinate.valueOf(6, 0)).isEmpty()) {
 
-                // Let's make sure there are no black pawns on the second rank files d thru g inclusive
+                // Let's make sure there are no black pawns on the second rank files d thru g
+                // inclusive
                 boolean passedPawnCheck = true;
                 for (int fileIndex = 3; fileIndex <= 6; fileIndex++) {
                     final Piece piece = position.getSquare(fileIndex, 1).getPiece();
-                    if (piece == null) continue;
-                    if (piece.getColor() != Color.BLACK) continue;
+                    if (piece == null)
+                        continue;
+                    if (piece.getColor() != Color.BLACK)
+                        continue;
 
                     passedPawnCheck = false;
                 }
 
-                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(6, 0), MoveType.CASTLING, null));
+                if (passedPawnCheck)
+                    moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(6, 0), MoveType.CASTLING, null));
             }
         }
 
         // White queenside (b1, c1, d1)
         if (canWhiteCastleQueenside && position.getToMove() == Color.WHITE) {
             if (position.getSquare(Coordinate.valueOf(1, 0)).isEmpty() &&
-                position.getSquare(Coordinate.valueOf(2, 0)).isEmpty() &&
-                position.getSquare(Coordinate.valueOf(3, 0)).isEmpty()) {
+                    position.getSquare(Coordinate.valueOf(2, 0)).isEmpty() &&
+                    position.getSquare(Coordinate.valueOf(3, 0)).isEmpty()) {
 
-                // Let's make sure there are no black pawns on the second rank files c thru f inclusive
+                // Let's make sure there are no black pawns on the second rank files c thru f
+                // inclusive
                 boolean passedPawnCheck = true;
                 for (int fileIndex = 2; fileIndex <= 5; fileIndex++) {
                     final Piece piece = position.getSquare(fileIndex, 1).getPiece();
-                    if (piece == null) continue;
-                    if (piece.getColor() != Color.BLACK) continue;
+                    if (piece == null)
+                        continue;
+                    if (piece.getColor() != Color.BLACK)
+                        continue;
 
                     passedPawnCheck = false;
                 }
 
-
-                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(2, 0), MoveType.CASTLING, null));
+                if (passedPawnCheck)
+                    moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(2, 0), MoveType.CASTLING, null));
             }
         }
 
         // Black kingside (f8, g8)
         if (canBlackCastleKingside && position.getToMove() == Color.BLACK) {
             if (position.getSquare(Coordinate.valueOf(5, 7)).isEmpty() &&
-                position.getSquare(Coordinate.valueOf(6, 7)).isEmpty()) {
+                    position.getSquare(Coordinate.valueOf(6, 7)).isEmpty()) {
 
-                
-                // Let's make sure there are no white pawns on the seventh rank files d thru g inclusive
+                // Let's make sure there are no white pawns on the seventh rank files d thru g
+                // inclusive
                 boolean passedPawnCheck = true;
                 for (int fileIndex = 3; fileIndex <= 6; fileIndex++) {
                     final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
-                    if (piece == null) continue;
-                    if (piece.getColor() != Color.WHITE) continue;
+                    if (piece == null)
+                        continue;
+                    if (piece.getColor() != Color.WHITE)
+                        continue;
 
                     passedPawnCheck = false;
                 }
 
-
-                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(6, 7), MoveType.CASTLING, null));
+                if (passedPawnCheck)
+                    moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(6, 7), MoveType.CASTLING, null));
             }
         }
 
         // Black queenside (b8, c8, d8)
         if (canBlackCastleQueenside && position.getToMove() == Color.BLACK) {
             if (position.getSquare(Coordinate.valueOf(1, 7)).isEmpty() &&
-                position.getSquare(Coordinate.valueOf(2, 7)).isEmpty() &&
-                position.getSquare(Coordinate.valueOf(3, 7)).isEmpty()) {
+                    position.getSquare(Coordinate.valueOf(2, 7)).isEmpty() &&
+                    position.getSquare(Coordinate.valueOf(3, 7)).isEmpty()) {
 
-
-                // Let's make sure there are no white pawns on the seventh rank files d thru g inclusive
+                // Let's make sure there are no white pawns on the seventh rank files d thru g
+                // inclusive
                 boolean passedPawnCheck = true;
                 for (int fileIndex = 2; fileIndex <= 5; fileIndex++) {
                     final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
-                    if (piece == null) continue;
-                    if (piece.getColor() != Color.WHITE) continue;
+                    if (piece == null)
+                        continue;
+                    if (piece.getColor() != Color.WHITE)
+                        continue;
 
                     passedPawnCheck = false;
                 }
-                if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(2, 7), MoveType.CASTLING, null));
+                if (passedPawnCheck)
+                    moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(2, 7), MoveType.CASTLING, null));
             }
         }
     }
@@ -392,7 +388,7 @@ public final class Moves {
             if (PositionValidator.getLegality(newPosition).isLegal()) {
                 moves.add(move);
             }
-            
+
         }
 
         return moves;
@@ -402,8 +398,7 @@ public final class Moves {
         return generateLegalMoves(position);
     }
 
-
-    //takes a move, and the position before the move was amde
+    // takes a move, and the position before the move was amde
 
     public static boolean isKingToMoveInCheck(final Position position) {
         for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
@@ -412,17 +407,21 @@ public final class Moves {
                 final Square origin = position.getSquare(fileIndex, rankIndex);
                 final Piece originPiece = origin.getPiece();
 
-                if (originPiece == null) continue;
-                if (originPiece.getColor() == position.getToMove()) continue;
+                if (originPiece == null)
+                    continue;
+                if (originPiece.getColor() == position.getToMove())
+                    continue;
 
                 if (originPiece instanceof Rider) {
                     final Rider rider = (Rider) originPiece;
                     for (final Offset offset : rider.getOffsets()) {
-                        for (final Coordinate coordinate : offset.extendFrom(origin.getCoordinate(), rider.getRange())) {
+                        for (final Coordinate coordinate : offset.extendFrom(origin.getCoordinate(),
+                                rider.getRange())) {
                             final Square targetSquare = position.getSquare(coordinate);
                             final Piece targetPiece = targetSquare.getPiece();
-                            
-                            if (targetPiece == null) continue;
+
+                            if (targetPiece == null)
+                                continue;
 
                             if (targetPiece.getColor() == position.getToMove() && targetPiece instanceof King) {
                                 return true;
@@ -435,13 +434,19 @@ public final class Moves {
                     final int direction = originPiece.getColor() == Color.WHITE ? 1 : -1;
 
                     if (fileIndex != 0) {
-                        if (!position.getSquare(fileIndex - 1, rankIndex + direction).isEmpty() && position.getSquare(fileIndex - 1, rankIndex + direction).getPiece() instanceof King && position.getSquare(fileIndex - 1, rankIndex + direction).getPiece().getColor() == position.getToMove()) {
+                        if (!position.getSquare(fileIndex - 1, rankIndex + direction).isEmpty()
+                                && position.getSquare(fileIndex - 1, rankIndex + direction).getPiece() instanceof King
+                                && position.getSquare(fileIndex - 1, rankIndex + direction).getPiece()
+                                        .getColor() == position.getToMove()) {
                             return true;
                         }
                     }
 
                     if (fileIndex != File.COUNT - 1) {
-                        if (!position.getSquare(fileIndex + 1, rankIndex + direction).isEmpty() && position.getSquare(fileIndex + 1, rankIndex + direction).getPiece() instanceof King && position.getSquare(fileIndex + 1, rankIndex + direction).getPiece().getColor() == position.getToMove()) {
+                        if (!position.getSquare(fileIndex + 1, rankIndex + direction).isEmpty()
+                                && position.getSquare(fileIndex + 1, rankIndex + direction).getPiece() instanceof King
+                                && position.getSquare(fileIndex + 1, rankIndex + direction).getPiece()
+                                        .getColor() == position.getToMove()) {
                             return true;
                         }
                     }
@@ -475,7 +480,7 @@ public final class Moves {
                 case G: // kingside
                     sanStringBuilder.append("O-O");
                     break;
-            
+
                 case C: // quenside
                     sanStringBuilder.append("O-O-O");
                     break;
@@ -495,7 +500,6 @@ public final class Moves {
                 // <from file>
                 sanStringBuilder.append(move.getFrom().getFile());
 
-                
                 // 'x'
                 sanStringBuilder.append("x");
 
@@ -513,7 +517,6 @@ public final class Moves {
                 sanStringBuilder.append(Character.toUpperCase(move.getPromotionPiece().getLetter()));
             }
 
-            
         } else {
             // <Piece symbol>
             sanStringBuilder.append(Character.toUpperCase(fromPiece.getLetter()));
@@ -522,7 +525,7 @@ public final class Moves {
             final boolean fileIsAmbiguous = Moves.isFileAmbiguous(move, position);
             final boolean rankIsAmbiguous = Moves.isRankAmbiguous(move, position);
 
-            if (isPieceAmbiguous(move, position)){
+            if (isPieceAmbiguous(move, position)) {
                 if (fileIsAmbiguous && !rankIsAmbiguous) {
                     if (DEBUG) {
                         System.out.println("fileIsAmbiguous && !rankIsAmbiguous");
@@ -545,7 +548,7 @@ public final class Moves {
                     sanStringBuilder.append(move.getFrom().getFile());
                 }
             }
-            
+
             // ['x']
             if (Moves.isCapture(move, position)) {
                 sanStringBuilder.append("x");
@@ -553,21 +556,20 @@ public final class Moves {
 
             // <to square>
             sanStringBuilder.append(move.getTo());
-            
-            
+
         }
 
         appendSANSuffix(sanStringBuilder, move, position.applyTo(move));
 
-
         return sanStringBuilder.toString();
     }
 
-    private static void appendSANSuffix(final StringBuilder sanStringBuilder, final Move move, final Position position) {
-        if (!Moves.isKingToMoveInCheck(position)) return;
+    private static void appendSANSuffix(final StringBuilder sanStringBuilder, final Move move,
+            final Position position) {
+        if (!Moves.isKingToMoveInCheck(position))
+            return;
         sanStringBuilder.append(Moves.getLegalMoves(position).isEmpty() ? "#" : "+");
     }
-    
 
     private static boolean isPieceAmbiguous(final Move move, final Position position) {
         final Coordinate from = move.getFrom();
@@ -582,28 +584,24 @@ public final class Moves {
             }
 
             // continue if the Pieces are not of the same class
-            if (!position.getSquare(from).getPiece().getClass().equals(position.getSquare(candidateFrom).getPiece().getClass())) {
+            if (!position.getSquare(from).getPiece().getClass()
+                    .equals(position.getSquare(candidateFrom).getPiece().getClass())) {
                 continue;
             }
 
             // continue if the toCoordinate is not the same
-            if (move.getTo().getFile() != candidateMove.getTo().getFile() || move.getTo().getRank() != candidateMove.getTo().getRank()) {
+            if (move.getTo().getFile() != candidateMove.getTo().getFile()
+                    || move.getTo().getRank() != candidateMove.getTo().getRank()) {
                 continue;
             }
 
-
             return true;
-
-
-
 
         }
 
         return false;
     }
 
-
-    
     private static boolean isRankAmbiguous(final Move move, final Position position) {
         for (final Move candidateMove : Moves.getLegalMoves(position)) {
             if (candidateMove.getFrom().getFile() == move.getFrom().getFile()) {
@@ -615,7 +613,8 @@ public final class Moves {
             if (!candidateMove.getTo().equals(move.getTo())) {
                 continue;
             }
-            if (!position.getSquare(candidateMove.getFrom()).getPiece().getClass().equals(position.getSquare(move.getFrom()).getPiece().getClass())) {
+            if (!position.getSquare(candidateMove.getFrom()).getPiece().getClass()
+                    .equals(position.getSquare(move.getFrom()).getPiece().getClass())) {
                 continue;
             }
             return true;
@@ -635,7 +634,8 @@ public final class Moves {
             if (!candidateMove.getTo().equals(move.getTo())) {
                 continue;
             }
-            if (!position.getSquare(candidateMove.getFrom()).getPiece().getClass().equals(position.getSquare(move.getFrom()).getPiece().getClass())) {
+            if (!position.getSquare(candidateMove.getFrom()).getPiece().getClass()
+                    .equals(position.getSquare(move.getFrom()).getPiece().getClass())) {
                 continue;
             }
             return true;
@@ -643,5 +643,5 @@ public final class Moves {
 
         return false;
     }
-    
+
 }
