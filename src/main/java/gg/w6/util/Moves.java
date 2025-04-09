@@ -267,106 +267,59 @@ public final class Moves {
             }
         }
 
-        extracted(position, moves, canWhiteCastleKingside, canWhiteCastleQueenside, canBlackCastleKingside,
+        checkPawnThreatsAndAddCastlingMoves(position, moves, canWhiteCastleKingside, canWhiteCastleQueenside, canBlackCastleKingside,
                 canBlackCastleQueenside);
 
         return moves;
     }
 
-    private static void extracted(Position position, Set<Move> moves, boolean canWhiteCastleKingside,
-            boolean canWhiteCastleQueenside, boolean canBlackCastleKingside, boolean canBlackCastleQueenside) {
-        // White kingside (f1, g1)
-        if (canWhiteCastleKingside && position.getToMove() == Color.WHITE) {
-            if (position.getSquare(Coordinate.valueOf(5, 0)).isEmpty() &&
-                    position.getSquare(Coordinate.valueOf(6, 0)).isEmpty()) {
+    private static void checkPawnThreatsAndAddCastlingMoves(Position position, Set<Move> moves,
+            boolean canWhiteCastleKingside, boolean canWhiteCastleQueenside,
+            boolean canBlackCastleKingside, boolean canBlackCastleQueenside) {
 
-                // Let's make sure there are no black pawns on the second rank files d thru g
-                // inclusive
-                boolean passedPawnCheck = true;
-                for (int fileIndex = 3; fileIndex <= 6; fileIndex++) {
-                    final Piece piece = position.getSquare(fileIndex, 1).getPiece();
-                    if (piece == null)
-                        continue;
-                    if (piece.getColor() != Color.BLACK)
-                        continue;
+        Move move;
 
-                    passedPawnCheck = false;
-                }
+        move = checkPawnThreatsForCastling(position, Color.WHITE, canWhiteCastleKingside,
+                new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 0, 1, 6); // White kingside
+        if (move != null)
+            moves.add(move);
 
-                if (passedPawnCheck)
-                    moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(6, 0), MoveType.CASTLING, null));
-            }
+        move = checkPawnThreatsForCastling(position, Color.WHITE, canWhiteCastleQueenside,
+                new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 0, 1, 2); // White queenside
+        if (move != null)
+            moves.add(move);
+
+        move = checkPawnThreatsForCastling(position, Color.BLACK, canBlackCastleKingside,
+                new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 7, 6, 6); // Black kingside
+        if (move != null)
+            moves.add(move);
+
+        move = checkPawnThreatsForCastling(position, Color.BLACK, canBlackCastleQueenside,
+                new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 7, 6, 2); // Black queenside
+        if (move != null)
+            moves.add(move);
+    }
+
+    private static Move checkPawnThreatsForCastling(Position position, Color color, boolean canCastle,
+            int[] emptyFileIndices, int[] pawnCheckFiles, int rank, int pawnRankOffset, int targetFile) {
+
+        if (!canCastle || position.getToMove() != color)
+            return null;
+
+        for (int file : emptyFileIndices) {
+            if (!position.getSquare(Coordinate.valueOf(file, rank)).isEmpty())
+                return null;
         }
 
-        // White queenside (b1, c1, d1)
-        if (canWhiteCastleQueenside && position.getToMove() == Color.WHITE) {
-            if (position.getSquare(Coordinate.valueOf(1, 0)).isEmpty() &&
-                    position.getSquare(Coordinate.valueOf(2, 0)).isEmpty() &&
-                    position.getSquare(Coordinate.valueOf(3, 0)).isEmpty()) {
+        int pawnRank = rank + (color == Color.WHITE ? 1 : -1);
 
-                // Let's make sure there are no black pawns on the second rank files c thru f
-                // inclusive
-                boolean passedPawnCheck = true;
-                for (int fileIndex = 2; fileIndex <= 5; fileIndex++) {
-                    final Piece piece = position.getSquare(fileIndex, 1).getPiece();
-                    if (piece == null)
-                        continue;
-                    if (piece.getColor() != Color.BLACK)
-                        continue;
-
-                    passedPawnCheck = false;
-                }
-
-                if (passedPawnCheck)
-                    moves.add(new Move(Coordinate.valueOf(4, 0), Coordinate.valueOf(2, 0), MoveType.CASTLING, null));
-            }
+        for (int file : pawnCheckFiles) {
+            Piece piece = position.getSquare(file, pawnRank).getPiece();
+            if (piece != null && piece.getColor() != color)
+                return null;
         }
 
-        // Black kingside (f8, g8)
-        if (canBlackCastleKingside && position.getToMove() == Color.BLACK) {
-            if (position.getSquare(Coordinate.valueOf(5, 7)).isEmpty() &&
-                    position.getSquare(Coordinate.valueOf(6, 7)).isEmpty()) {
-
-                // Let's make sure there are no white pawns on the seventh rank files d thru g
-                // inclusive
-                boolean passedPawnCheck = true;
-                for (int fileIndex = 3; fileIndex <= 6; fileIndex++) {
-                    final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
-                    if (piece == null)
-                        continue;
-                    if (piece.getColor() != Color.WHITE)
-                        continue;
-
-                    passedPawnCheck = false;
-                }
-
-                if (passedPawnCheck)
-                    moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(6, 7), MoveType.CASTLING, null));
-            }
-        }
-
-        // Black queenside (b8, c8, d8)
-        if (canBlackCastleQueenside && position.getToMove() == Color.BLACK) {
-            if (position.getSquare(Coordinate.valueOf(1, 7)).isEmpty() &&
-                    position.getSquare(Coordinate.valueOf(2, 7)).isEmpty() &&
-                    position.getSquare(Coordinate.valueOf(3, 7)).isEmpty()) {
-
-                // Let's make sure there are no white pawns on the seventh rank files d thru g
-                // inclusive
-                boolean passedPawnCheck = true;
-                for (int fileIndex = 2; fileIndex <= 5; fileIndex++) {
-                    final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
-                    if (piece == null)
-                        continue;
-                    if (piece.getColor() != Color.WHITE)
-                        continue;
-
-                    passedPawnCheck = false;
-                }
-                if (passedPawnCheck)
-                    moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(2, 7), MoveType.CASTLING, null));
-            }
-        }
+        return new Move(Coordinate.valueOf(4, rank), Coordinate.valueOf(targetFile, rank), MoveType.CASTLING, null);
     }
 
     private static void addPawnMovePromotionPossible(Set<Move> moves, Color pawnColor,
