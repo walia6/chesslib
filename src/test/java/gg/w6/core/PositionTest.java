@@ -261,7 +261,7 @@ class PositionTest {
         Position position = Position.valueOf(starting);
 
         for (StringTuple stringTuple : moveToResultingPosition) {
-            final Move move = Moves.generateMoveFromString(position, stringTuple.getX());
+            final Move move = Moves.generateMoveFromLAN(position, stringTuple.getX());
             final Position oldPosition = position;
             position = position.applyTo(move);
             

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import gg.w6.core.Position;
 import gg.w6.util.Move;
+import gg.w6.util.MoveGenerator;
 import gg.w6.util.Moves;
 
 public class Main {
@@ -22,7 +23,7 @@ public class Main {
 
         Position position = Position.valueOf("Bn1N3R/ppPpNR1r/BnBr1NKR/k3pP2/3PR2R/N7/3P2P1/4Q2R w - - 0 1");
 
-        Set<Move> moves = Moves.getLegalMoves(position);
+        Set<Move> moves = MoveGenerator.getLegalMoves(position);
 
         for (Move move : moves) {
             System.out.println(Moves.generateSAN(move, position));

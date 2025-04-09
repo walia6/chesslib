@@ -48,7 +48,7 @@ public class MovesIntegrationTest {
                                 "[" + file.getFileName() + "] FEN: \"" + testCase.start.fen + "\"",
                                 () -> {
                                     Position position = Position.valueOf(testCase.start.fen);
-                                    Set<Move> legalMoves = Moves.getLegalMoves(position);
+                                    Set<Move> legalMoves = MoveGenerator.getLegalMoves(position);
 
                                     Set<String> generatedSansWithFen = legalMoves.stream()
                                         .map(move -> {
