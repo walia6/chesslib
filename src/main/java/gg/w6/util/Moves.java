@@ -283,6 +283,14 @@ public final class Moves {
             }
         }
 
+        extracted(position, moves, canWhiteCastleKingside, canWhiteCastleQueenside, canBlackCastleKingside,
+                canBlackCastleQueenside);
+
+        return moves;
+    }
+
+    private static void extracted(Position position, Set<Move> moves, boolean canWhiteCastleKingside,
+            boolean canWhiteCastleQueenside, boolean canBlackCastleKingside, boolean canBlackCastleQueenside) {
         // White kingside (f1, g1)
         if (canWhiteCastleKingside && position.getToMove() == Color.WHITE) {
             if (position.getSquare(Coordinate.valueOf(5, 0)).isEmpty() &&
@@ -294,7 +302,6 @@ public final class Moves {
                     final Piece piece = position.getSquare(fileIndex, 1).getPiece();
                     if (piece == null) continue;
                     if (piece.getColor() != Color.BLACK) continue;
-                    if (!(piece instanceof Pawn)) continue;
 
                     passedPawnCheck = false;
                 }
@@ -315,7 +322,6 @@ public final class Moves {
                     final Piece piece = position.getSquare(fileIndex, 1).getPiece();
                     if (piece == null) continue;
                     if (piece.getColor() != Color.BLACK) continue;
-                    if (!(piece instanceof Pawn)) continue;
 
                     passedPawnCheck = false;
                 }
@@ -337,7 +343,6 @@ public final class Moves {
                     final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
                     if (piece == null) continue;
                     if (piece.getColor() != Color.WHITE) continue;
-                    if (!(piece instanceof Pawn)) continue;
 
                     passedPawnCheck = false;
                 }
@@ -360,15 +365,12 @@ public final class Moves {
                     final Piece piece = position.getSquare(fileIndex, Rank.COUNT - 2).getPiece();
                     if (piece == null) continue;
                     if (piece.getColor() != Color.WHITE) continue;
-                    if (!(piece instanceof Pawn)) continue;
 
                     passedPawnCheck = false;
                 }
                 if (passedPawnCheck) moves.add(new Move(Coordinate.valueOf(4, 7), Coordinate.valueOf(2, 7), MoveType.CASTLING, null));
             }
         }
-
-        return moves;
     }
 
     private static void addPawnMovePromotionPossible(Set<Move> moves, Color pawnColor,

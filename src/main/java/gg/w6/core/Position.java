@@ -547,6 +547,12 @@ public class Position {
                 ? this.fullMoves + 1
                 : this.fullMoves);
     }
+
+
+    @Override
+    public String toString() {
+        return this.generateFEN();
+    }
     
     
 }
