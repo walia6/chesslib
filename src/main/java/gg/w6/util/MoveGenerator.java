@@ -70,11 +70,8 @@ public final class MoveGenerator {
                             if (targetPiece != null) break;
                         }
                     }
-                } else if (piece instanceof Pawn) {
-                    MoveGenerator.processPawnMoves(position, moves, toMove, fileIndex, rankIndex, origin);
                 } else {
-                    throw new IllegalStateException("The " + pieceColor + " \"" + piece + "\" at " + origin +
-                            " is not a Rider or Pawn. FEN: \"" + position.generateFEN() + "\".");
+                    MoveGenerator.processPawnMoves(position, moves, toMove, fileIndex, rankIndex, origin);
                 }
             }
         }
