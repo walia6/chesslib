@@ -1,9 +1,12 @@
 package gg.w6.util;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,12 +64,19 @@ public class MovesIntegrationTest {
                                     Set<String> expectedSansWithFen = testCase.expected.stream()
                                         .map(expected -> expected.move + " | " + expected.fen)
                                         .collect(Collectors.toSet());
+                                    if (!expectedSansWithFen.equals(generatedSansWithFen)) {
+    Set<String> missing = new HashSet<>(expectedSansWithFen);
+    missing.removeAll(generatedSansWithFen);
 
-                                    assertEquals(
-                                        expectedSansWithFen,
-                                        generatedSansWithFen,
-                                        "Mismatch in expected and generated SAN+FEN moves for position: " + testCase.start.fen
-                                    );
+    Set<String> unexpected = new HashSet<>(generatedSansWithFen);
+    unexpected.removeAll(expectedSansWithFen);
+
+    assertAll(
+        "Mismatch in expected and generated SAN+FEN moves for position: " + testCase.start.fen,
+        () -> assertTrue(missing.isEmpty(), "Missing moves:\n" + missing.stream().sorted().collect(Collectors.joining("\n"))),
+        () -> assertTrue(unexpected.isEmpty(), "Unexpected moves:\n" + unexpected.stream().sorted().collect(Collectors.joining("\n")))
+    );
+}
                                 }
                             ));
                     } catch (Exception e) {

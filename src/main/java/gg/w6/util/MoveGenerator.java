@@ -174,7 +174,7 @@ public final class MoveGenerator {
     
         for (final int file : pawnCheckFiles) {
             final Piece piece = position.getSquare(file, pawnRank).getPiece();
-            if (piece != null && piece.getColor() != color)
+            if (piece != null && piece.getColor() != color && piece instanceof Pawn)
                 return null;
         }
     

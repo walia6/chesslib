@@ -1,25 +1,20 @@
 package gg.w6;
 
-import java.util.Set;
-
 import gg.w6.core.Position;
-import gg.w6.util.Move;
-import gg.w6.util.MoveGenerator;
 import gg.w6.util.Moves;
+import gg.w6.util.Perft;
 
 public class Main {
 
-    private static void assertThat(boolean bool) {
-        if (bool) {
-            Exception exception = new Exception();
-            System.out.println("GOOD ASSERTION!");
-            exception.printStackTrace();
-            return;
-        }
-        throw new AssertionError();
-        
-    }
     public static void main(String[] args) {
+
+        final Position startingPosition = Position.valueOf("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+
+        System.out.println(Perft.perft(startingPosition, 5));
+
+
+        /*
+        System.out.println("test");
 
         Position position = Position.valueOf("Bn1N3R/ppPpNR1r/BnBr1NKR/k3pP2/3PR2R/N7/3P2P1/4Q2R w - - 0 1");
 
@@ -29,7 +24,7 @@ public class Main {
             System.out.println(Moves.generateSAN(move, position));
         }
 
-        System.out.println(moves.size());
+        System.out.println(moves.size()); */
 
 
         /*      String startingFEN = "r2qk2r/3n1pb1/p2p1np1/3Pp2p/Pp6/1N2BP2/1PPQB1PP/R3K2R w KQkq - 0 15";

@@ -55,75 +55,6 @@ public final class Moves {
                         - to.getRank().ordinal()) == 2;
     }
 
-    public static Move generateMoveFromLAN(final Position position,
-            final String lan) {
-        Coordinate from; // done
-        Coordinate to; // done
-        Piece movedPiece; // done
-        MoveType moveType; // done
-        Piece promotionPiece;
-
-        String fromSquare;
-        boolean isCapture;
-        String toSquare;
-        String promotion;
-
-        final String regex = "([NBRQK])?([a-h][1-8])([-x])([a-h][1-8])([NBRQK])?";
-        final Matcher matcher = Pattern.compile(regex).matcher(lan);
-
-        if (!matcher.matches())
-            throw new IllegalArgumentException(
-                    "Invalid LAN: " + lan);
-
-        fromSquare = matcher.group(2);
-        isCapture = matcher.group(3).equals("x");
-        toSquare = matcher.group(4);
-        promotion = matcher.group(5); // null if no promotion
-
-        from = Coordinate.valueOf(fromSquare);
-        to = Coordinate.valueOf(toSquare);
-        movedPiece = position.getSquare(from).getPiece();
-
-        if (movedPiece instanceof King &&
-                (lan.equals("e1-g1")
-                        || lan.equals("e1-c1")
-                        || lan.equals("e8-g8")
-                        || lan.equals("e8-c8"))) {
-            moveType = MoveType.CASTLING;
-        } else if (movedPiece instanceof Pawn && promotion != null) {
-            moveType = MoveType.PROMOTION;
-        } else if (movedPiece instanceof Pawn && isCapture
-                && position.getSquare(to).getPiece() == null) {
-            moveType = MoveType.EN_PASSANT;
-        } else {
-            moveType = MoveType.NORMAL;
-        }
-
-        if (promotion != null) {
-            switch (promotion) {
-                case "Q":
-                    promotionPiece = new Queen(movedPiece.getColor());
-                    break;
-                case "R":
-                    promotionPiece = new Rook(movedPiece.getColor());
-                    break;
-                case "B":
-                    promotionPiece = new Bishop(movedPiece.getColor());
-                    break;
-                case "N":
-                    promotionPiece = new Knight(movedPiece.getColor());
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            "Invalid promotion piece: " + promotion);
-            }
-        } else {
-            promotionPiece = null;
-        }
-
-        return new Move(from, to, moveType, promotionPiece);
-    }
-
     public static boolean isKingToMoveInCheck(final Position position) {
         for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
             for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
@@ -343,6 +274,16 @@ public final class Moves {
         }
 
         return false;
+    }
+
+    public static long perft(final Position position, int depth) {
+        if (depth == 0) return 1;
+        long nodes = 0;
+        for (Move move : MoveGenerator.getLegalMoves(position)) {
+            final Position newPosition = position.applyTo(move);
+            nodes += perft(newPosition, depth - 1);
+        }
+        return nodes;
     }
 
     private Moves() {
