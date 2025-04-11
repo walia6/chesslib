@@ -18,100 +18,102 @@ class PositionValidatorTest {
 
     @Test
     void testValidPosition() {
-        String fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertTrue(legality.isLegal());
+        final String fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.LEGAL, legality);
     }
 
     @Test
     void testNoKings() {
-        String fen = "8/8/8/8/8/8/8/8 w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("Missing a white and/or black king"));
+        final String fen = "8/8/8/8/8/8/8/8 w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.MISSING_KING, legality);
     }
 
     @Test
     void testNoWhiteKing() {
-        String fen = "k7/8/8/8/8/8/8/8 w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("Missing a white and/or black king"));
+        final String fen = "k7/8/8/8/8/8/8/8 w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+
+        assertEquals(Legality.MISSING_KING, legality);
     }
 
     @Test
     void testNoBlackKing() {
-        String fen = "K7/8/8/8/8/8/8/8 w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("Missing a white and/or black king"));
+        final String fen = "K7/8/8/8/8/8/8/8 w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.MISSING_KING, legality);
     }
 
     @Test
     void testTooManyWhiteKings() {
-        String fen = "8/8/8/8/8/8/4K3/4K3 w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("Too many white kings"));
+        final String fen = "8/8/8/8/8/8/4K3/4K3 w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.TOO_MANY_KINGS, legality);
     }
 
     @Test
     void testTooManyBlackKings() {
-        String fen = "8/8/8/8/7k/8/4k3/4K3 w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("Too many black kings"));
+        final String fen = "8/8/8/8/7k/8/4k3/4K3 w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.TOO_MANY_KINGS, legality);
     }
 
     @Test
     void testPawnOnFirstRank() {
-        String fen = "8/8/8/8/8/8/8/P2K3k w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("pawn was found on the first"));
+        final String fen = "8/8/8/8/8/8/8/P2K3k w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.ILLEGAL_PAWN_RANK, legality);
     }
 
     @Test
     void testPawnOnEighthRank() {
-        String fen = "P7/8/8/8/7K/8/8/7k w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("pawn was found on the first or eighth rank"));
+        final String fen = "P7/8/8/8/7K/8/8/7k w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.ILLEGAL_PAWN_RANK, legality);
     }
 
     @Test
     void testKingInCheckByPawn() {
-        String fen = "7k/8/8/8/4p3/3K4/8/8 b - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("is attacking the"));
+        final String fen = "7k/8/8/8/4p3/3K4/8/8 b - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.CAN_CAPTURE_KING, legality);
     }
 
     @Test
     void testKingInCheckByRook() {
-        String fen = "8/8/8/8/8/8/8/r3K2k b - - 0 1"; // black rook attacks white king
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertFalse(legality.isLegal());
-        assertTrue(legality.getErrorMessage().contains("is in check"));
+        final String fen = "8/8/8/8/8/8/8/r3K2k b - - 0 1"; // black rook attacks white king
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.CAN_CAPTURE_KING, legality);
     }
 
     @Test
     void testCallingGetErrorMessageOnLegalThrows() {
-        String fen = "8/8/8/8/8/8/8/4K2k w - - 0 1";
-        Position position = Position.valueOf(fen);
-        Legality legality = PositionValidator.getLegality(position);
-        assertTrue(legality.isLegal());
-        assertThrows(IllegalStateException.class, legality::getErrorMessage);
+        final String fen = "8/8/8/8/8/8/8/4K2k w - - 0 1";
+        final Position position = Position.valueOf(fen);
+        final Legality legality = PositionValidator.getLegality(position);
+
+        assertEquals(Legality.LEGAL, legality);
     }
 
     @Test
@@ -173,14 +175,18 @@ class PositionValidatorTest {
             "8/8/4k3/8/4K3/8/8/2P5 b - - 0 1",
         };
 
-        for (String fen : legalPositions) {
-            Position position = Position.valueOf(fen);
-            assertTrue(PositionValidator.getLegality(position).isLegal());
+        for (final String fen : legalPositions) {
+            final Position position = Position.valueOf(fen);
+            final Legality actual = PositionValidator.getLegality(position);
+
+            assertEquals(Legality.LEGAL, actual);
         }
 
-        for (String fen : illegalPositions) {
-            Position position = Position.valueOf(fen);
-            assertFalse(PositionValidator.getLegality(position).isLegal());
+        for (final String fen : illegalPositions) {
+            final Position position = Position.valueOf(fen);
+            final Legality actual = PositionValidator.getLegality(position);
+
+            assertNotEquals(Legality.LEGAL, actual);
         }
     }
 }

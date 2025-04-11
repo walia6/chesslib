@@ -1,16 +1,11 @@
 package gg.w6;
 
-import gg.w6.core.Position;
-import gg.w6.util.Moves;
-import gg.w6.util.Perft;
+
 
 public class Main {
 
     public static void main(String[] args) {
 
-        final Position startingPosition = Position.valueOf("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
-
-        System.out.println(Perft.perft(startingPosition, 5));
 
 
         /*

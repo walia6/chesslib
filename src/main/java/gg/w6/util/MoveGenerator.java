@@ -8,6 +8,7 @@ import gg.w6.core.Square;
 import gg.w6.piece.Pawn;
 import gg.w6.piece.Piece;
 import gg.w6.piece.Rider;
+import gg.w6.util.PositionValidator.Legality;
 
 public final class MoveGenerator {
     public static Set<Move> generatePseudoLegalMoves(final Position position) {
@@ -191,7 +192,7 @@ public final class MoveGenerator {
         final Set<Move> moves = new HashSet<>();
         for (final Move move : generatePseudoLegalMoves(position)) {
             final Position newPosition = position.applyTo(move);
-            if (PositionValidator.getLegality(newPosition).isLegal()) {
+            if (PositionValidator.getLegality(newPosition) == Legality.LEGAL) {
                 moves.add(move);
             }
     

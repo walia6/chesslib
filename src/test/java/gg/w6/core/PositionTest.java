@@ -4,8 +4,6 @@ import gg.w6.util.CastlingRights;
 import gg.w6.util.Color;
 import gg.w6.util.Coordinate;
 import gg.w6.util.File;
-import gg.w6.util.Move;
-import gg.w6.util.Moves;
 import gg.w6.util.Rank;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -14,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 

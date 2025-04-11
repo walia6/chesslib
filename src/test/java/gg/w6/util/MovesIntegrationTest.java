@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,19 +30,20 @@ public class MovesIntegrationTest {
     @CsvFileSource(resources = "/gg/w6/util/MovesIntegrationTest/testIsKingToMoveInCheckIntegration.csv", numLinesToSkip = 1)
     void testIsKingToMoveInCheckIntegration (String fen, boolean expected) {
         final Position position = Position.valueOf(fen);
-        final boolean actual = Moves.isKingToMoveInCheck(position);
+        final boolean actual = Positions.isKingToMoveInCheck(position);
 
         assertEquals(expected, actual);
     }
+
 
     @TestFactory
     Collection<DynamicTest> testGetLegalMovesAndGenerateSANIntegration() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
-        var dir = getClass().getResource("/gg/w6/util/MovesIntegrationTest/testGetLegalMovesAndGenerateSANIntegration/");
-        var path = Path.of(dir.toURI());
+        URL dir = getClass().getResource("/gg/w6/util/MovesIntegrationTest/testGetLegalMovesAndGenerateSANIntegration/");
+        Path path = Path.of(dir.toURI());
 
-        try (Stream<Path> files = java.nio.file.Files.list(path)) {
+        try (Stream<Path> files = Files.list(path)) {
             return files
                 .filter(p -> p.toString().endsWith(".json"))
                 .flatMap(file -> {

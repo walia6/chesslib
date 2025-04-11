@@ -58,38 +58,14 @@ public class PositionValidator {
      * <p>Use {@link #isLegal()} to check if the position is valid, and {@link #getErrorMessage()}
      * to retrieve any error message if the position is illegal.</p>
      */
-    public static class Legality {
-        private final boolean legal;
-        private final String errorMessage;
-
-        protected Legality(boolean legal) {
-            this.legal = legal;
-            this.errorMessage = null;
-        }
-
-        protected Legality(String errorMessage) {
-            this.legal = false;
-            this.errorMessage = errorMessage;
-        }
-
-        /**
-         * Returns the error message if the position is illegal.
-         * @return The error message.
-         * @throws IllegalStateException if the position is legal.
-         */
-        public String getErrorMessage() {
-            if (this.legal) throw new IllegalStateException
-                    ("No error: the result is legal");
-            return errorMessage;
-        }
-
-        /**
-         * Checks if the position is legal.
-         * @return True if the position is legal, false otherwise.
-         */
-        public boolean isLegal() {
-            return legal;
-        }
+    public static enum Legality {
+        LEGAL,
+        MISSING_KING,
+        TOO_MANY_KINGS,
+        CAN_CAPTURE_KING,
+        ILLEGAL_PAWN_RANK,
+        ILLEGAL_CASTLING_RIGHTS,
+        ILLEGAL_EN_PASSANT,
     }
 
     /**
@@ -131,16 +107,12 @@ public class PositionValidator {
                 if (currentPiece instanceof King) {
                     if (currentPiece.getColor() == Color.WHITE) {
                         if (whiteKingSquare != null) {
-                            return new Legality("Too many white kings for "
-                                    + "position \"" + position.generateFEN()
-                                    + "\".");
+                            return Legality.TOO_MANY_KINGS;
                         }
                         whiteKingSquare = currentSquare;
                     } else {
                         if (blackKingSquare != null) {
-                            return new Legality("Too many black kings for "
-                                    + "position \"" + position.generateFEN()
-                                    + "\".");
+                            return Legality.TOO_MANY_KINGS;
                         }
                         blackKingSquare = currentSquare;
                     }
@@ -152,9 +124,7 @@ public class PositionValidator {
         }
 
         if (whiteKingSquare == null || blackKingSquare == null) {
-            return new
-                    Legality("Missing a white and/or black king for position \""
-                    + position.generateFEN() + "\".");
+            return Legality.MISSING_KING;
         }
 
         final Color toMove = position.getToMove();
@@ -176,9 +146,7 @@ public class PositionValidator {
 
                 if (square.getCoordinate().getRank() == Rank.ONE
                         || square.getCoordinate().getRank() == Rank.EIGHT)
-                    return new Legality("A pawn was found on the first or "
-                            + "eighth rank for position \""
-                            + position.generateFEN() + "\".");
+                    return Legality.ILLEGAL_PAWN_RANK;
 
                 if (pieceColor != toMove) continue;
 
@@ -187,12 +155,7 @@ public class PositionValidator {
                         == 1 && notToMoveKingSquare.getCoordinate().getRank()
                         .ordinal() - square.getCoordinate().getRank().ordinal()
                         == (toMove == Color.WHITE ? 1 : -1))
-                    return new Legality("The pawn at " + square.getCoordinate()
-                            + " is attacking the "
-                            + notToMoveKingSquare.getPiece().getColor()
-                            + " king at " + notToMoveKingSquare.getCoordinate()
-                            + " for position \"" + position.generateFEN()
-                            + "\".");
+                    return Legality.CAN_CAPTURE_KING;
             }
 
             if (piece instanceof Rider) {
@@ -205,18 +168,12 @@ public class PositionValidator {
                         Piece visionPiece = visionSquare.getPiece();
                         if (visionPiece == null) continue;
                         if (visionSquare.equals(notToMoveKingSquare)) {
-                            return new Legality("The " + notToMoveKingSquare
-                                    .getPiece().getColor() + " king on "
-                                    + notToMoveKingSquare.getCoordinate()
-                                    + " is in check by the " + rider.getColor()
-                                    + " " + rider + " on " + square
-                                    .getCoordinate() + " for position \""
-                                    + position.generateFEN() + "\".");
+                            return Legality.CAN_CAPTURE_KING;
                         } else break;
                     }
                 }
             }
         }
-        return new Legality(true);
+        return Legality.LEGAL;
     }
 }

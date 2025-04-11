@@ -9,7 +9,7 @@ import java.util.concurrent.ForkJoinPool;
 
 public class Perft {
 
-    public static long perft(Position position, int depth) {
+    public static long perft(int depth, Position position) {
         ForkJoinPool pool = new ForkJoinPool();
         return pool.invoke(new PerftTask(position, depth));
     }
