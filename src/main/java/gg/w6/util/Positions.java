@@ -9,6 +9,9 @@ import gg.w6.piece.Rider;
 
 public class Positions {
 
+    private Positions() {
+    } // ensure non-instantiability
+
     public static boolean isKingToMoveInCheck(final Position position) {
         for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
             for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
@@ -21,8 +24,7 @@ public class Positions {
                 if (originPiece.getColor() == position.getToMove())
                     continue;
     
-                if (originPiece instanceof Rider) {
-                    final Rider rider = (Rider) originPiece;
+                if (originPiece instanceof final Rider rider) {
                     for (final Offset offset : rider.getOffsets()) {
                         for (final Coordinate coordinate : offset.extendFrom(origin.getCoordinate(),
                                 rider.getRange())) {

@@ -1,5 +1,7 @@
 package gg.w6.util;
 
+import java.util.Arrays;
+
 /**
  * Represents a coordinate on a chessboard.
  *
@@ -70,9 +72,7 @@ public class Coordinate {
      * <p>This method is used for testing purposes only.</p>
      */
     public static void resetCache() {
-        for (int i = 0; i < coordinates.length; i++) {
-            coordinates[i] = null;
-        }
+        Arrays.fill(coordinates, null);
     }
 
     /**
@@ -106,6 +106,14 @@ public class Coordinate {
         return rank;
     }
 
+    public int getFileIndex() {
+        return file.ordinal();
+    }
+
+    public int getRankIndex() {
+        return rank.ordinal();
+    }
+
     @Override
     public String toString() {
         return file.toString() + rank.toString();
@@ -113,11 +121,11 @@ public class Coordinate {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Coordinate) {
-            Coordinate otherCoordinate = (Coordinate) obj;
-            return file == otherCoordinate.file
-                    && rank == otherCoordinate.rank;
-        }
-        return false;
+        return obj instanceof final Coordinate otherCoordinate
+                && file == otherCoordinate.file && rank == otherCoordinate.rank;
+    }
+
+    public boolean is(final String coordinateString) {
+        return this.equals(valueOf(coordinateString));
     }
 }

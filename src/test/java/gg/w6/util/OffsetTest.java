@@ -6,28 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class OffsetTest {
-    @BeforeEach
-    private void resetCache() {
-        Offset.resetCache();
-    }
 
     @Test
     void testValueOf() {
         Offset offset = Offset.valueOf(5, 3);
-        assertEquals(offset.getFiles(), 5);
-        assertEquals(offset.getRanks(), 3);
-    }
-    
-    @Test
-    static void testValueOfCacheHit() {
-        Offset offset1 = Offset.valueOf(3, 2);
-        Offset offset2 = Offset.valueOf(3, 2);
-        assertSame(offset1, offset2);
+        assertEquals(5, offset.getFiles());
+        assertEquals(3, offset.getRanks());
     }
 
     @Test
@@ -107,7 +98,8 @@ public class OffsetTest {
             Coordinate.valueOf("e7")
         };
 
-        assertEquals(offset.extendFrom(coordinate, range), Arrays.asList(expected));
+        assertEquals(Arrays.asList(expected), StreamSupport.stream(offset.extendFrom(coordinate, range).spliterator(), false)
+    .collect(Collectors.toList()));
 
     }
 
@@ -121,7 +113,8 @@ public class OffsetTest {
             Coordinate.valueOf("d5")
         };
 
-        assertEquals(offset.extendFrom(coordinate, range), Arrays.asList(expected));
+        assertEquals(Arrays.asList(expected), StreamSupport.stream(offset.extendFrom(coordinate, range).spliterator(), false)
+        .collect(Collectors.toList()));
     }
 
 }

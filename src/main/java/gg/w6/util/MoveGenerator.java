@@ -53,17 +53,17 @@ public final class MoveGenerator {
                             } else {
                                 if (toMove == Color.WHITE) {
                                     if (canWhiteCastleKingside) {
-                                        canWhiteCastleKingside = !MoveGenerator.isCastleBlocked(target, 4, 0, 5, 0, 6, 0);
+                                        canWhiteCastleKingside = MoveGenerator.notOnCastlePath(target, 4, 0, 5, 0, 6, 0);
                                     }
                                     if (canWhiteCastleQueenside) {
-                                        canWhiteCastleQueenside = !MoveGenerator.isCastleBlocked(target, 4, 0, 3, 0, 2, 0);
+                                        canWhiteCastleQueenside = MoveGenerator.notOnCastlePath(target, 4, 0, 3, 0, 2, 0);
                                     }
                                 } else {
                                     if (canBlackCastleKingside) {
-                                        canBlackCastleKingside = !MoveGenerator.isCastleBlocked(target, 4, 7, 5, 7, 6, 7);
+                                        canBlackCastleKingside = MoveGenerator.notOnCastlePath(target, 4, 7, 5, 7, 6, 7);
                                     }
                                     if (canBlackCastleQueenside) {
-                                        canBlackCastleQueenside = !MoveGenerator.isCastleBlocked(target, 4, 7, 3, 7, 2, 7);
+                                        canBlackCastleQueenside = MoveGenerator.notOnCastlePath(target, 4, 7, 3, 7, 2, 7);
                                     }
                                 }
                             }
@@ -141,24 +141,24 @@ public final class MoveGenerator {
         Move move;
     
         move = MoveGenerator.checkPawnThreatsForCastling(position, Color.WHITE, canWhiteCastleKingside,
-                new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 0, 1, 6); // White kingside
+                new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 0, 6); // White kingside
         if (move != null) moves.add(move);
     
         move = MoveGenerator.checkPawnThreatsForCastling(position, Color.WHITE, canWhiteCastleQueenside,
-                new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 0, 1, 2); // White queenside
+                new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 0, 2); // White queenside
         if (move != null) moves.add(move);
     
         move = MoveGenerator.checkPawnThreatsForCastling(position, Color.BLACK, canBlackCastleKingside,
-                new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 7, 6, 6); // Black kingside
+                new int[] { 5, 6 }, new int[] { 3, 4, 5, 6 }, 7, 6); // Black kingside
         if (move != null) moves.add(move);
     
         move = MoveGenerator.checkPawnThreatsForCastling(position, Color.BLACK, canBlackCastleQueenside,
-                new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 7, 6, 2); // Black queenside
+                new int[] { 1, 2, 3 }, new int[] { 2, 3, 4, 5 }, 7, 2); // Black queenside
         if (move != null) moves.add(move);
     }
 
     private static Move checkPawnThreatsForCastling(final Position position, final Color color, final boolean canCastle,
-        final int[] emptyFileIndices, final int[] pawnCheckFiles, final int rank, final int pawnRankOffset, final int targetFile) {
+                                                    final int[] emptyFileIndices, final int[] pawnCheckFiles, final int rank, final int targetFile) {
     
         if (!canCastle || position.getToMove() != color)
             return null;
@@ -179,13 +179,13 @@ public final class MoveGenerator {
         return new Move(Coordinate.valueOf(4, rank), Coordinate.valueOf(targetFile, rank), MoveType.CASTLING, null);
     }
 
-    private static boolean isCastleBlocked(final Coordinate target, final int... squares) {
+    private static boolean notOnCastlePath(final Coordinate target, final int... squares) {
         for (int i = 0; i < squares.length; i += 2) {
             if (target.equals(Coordinate.valueOf(squares[i], squares[i + 1]))) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private static Set<Move> generateLegalMoves(final Position position) {

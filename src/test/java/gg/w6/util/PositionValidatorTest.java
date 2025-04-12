@@ -118,7 +118,7 @@ class PositionValidatorTest {
 
     @Test
     void testVariousPositions() {
-        final String legalPositions[] = {
+        final String[] legalPositions = {
             "7k/5Q2/8/8/8/8/8/K7 b - - 0 1", 
             "8/8/3Q4/3p4/3k4/8/8/K7 w - - 0 1", 
             "8/8/5Q2/4p3/3k4/8/8/K7 w - - 0 1" ,

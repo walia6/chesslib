@@ -32,12 +32,39 @@ public class Position {
      */
     public static Position valueOf(final String fen) {
 
+        final String[] recordFields = getAndVerifyRecordFields(fen);
+
+        final Square[][] squares = new Square[File.COUNT][Rank.COUNT];
+        try {
+            parseAndPopulateSquares(recordFields, squares);
+        } catch (final Exception e) {
+            throw new IllegalArgumentException(
+                    "Malformed piece placement field \""
+                            + recordFields[0] + "\".");
+        }
+
+        return new Position(
+                squares,
+                new CastlingRights(
+                        recordFields[2].contains("K"),
+                        recordFields[2].contains("Q"),
+                        recordFields[2].contains("k"),
+                        recordFields[2].contains("q")),
+                recordFields[3].equals("-")
+                        ? null : Coordinate.valueOf(recordFields[3]),
+                Color.valueOf(recordFields[1].charAt(0)),
+                Integer.parseInt(recordFields[4]),
+                Integer.parseInt(recordFields[5]));
+
+    }
+
+    private static String[] getAndVerifyRecordFields(String fen) {
         final String[] recordFields = fen.split(" ");
 
         if (recordFields.length != 6)
             throw new IllegalArgumentException(
-                    "Malformed FEN. Too " + 
-                    (recordFields.length > 6 ? "many" : "few") 
+                    "Malformed FEN. Too " +
+                    (recordFields.length > 6 ? "many" : "few")
                     + " fields for FEN \"" + fen + "\".");
 
         // Validate castling rights field:
@@ -63,32 +90,7 @@ public class Position {
             throw new IllegalArgumentException(
                     "Malformed fullmove number field \""
                             + recordFields[5] + "\".");
-
-        final Square[][] squares = new Square[File.COUNT][Rank.COUNT];
-        try {
-            parseAndPopulateSquares(recordFields, squares);
-        } catch (final Exception e) {
-            throw new IllegalArgumentException(
-                    "Malformed piece placement field \""
-                            + recordFields[0] + "\".");
-        }
-
-        final Position position = new Position(
-                squares,
-                new CastlingRights(
-                        recordFields[2].contains("K"),
-                        recordFields[2].contains("Q"),
-                        recordFields[2].contains("k"),
-                        recordFields[2].contains("q")),
-                recordFields[3].equals("-")
-                        ? null : Coordinate.valueOf(recordFields[3]),
-                Color.valueOf(recordFields[1].charAt(0)),
-                Integer.valueOf(recordFields[4]),
-                Integer.valueOf(recordFields[5]));
-
-
-
-        return position;
+        return recordFields;
     }
 
     /**
@@ -100,8 +102,8 @@ public class Position {
      */
     private static void parseAndPopulateSquares(final String[] recordFields,
             final Square[][] squares) {
-        final String[] piecePlacementDataStrings = Arrays.asList(
-                recordFields[0].split("/")).stream()
+        final String[] piecePlacementDataStrings = Arrays.stream(
+                recordFields[0].split("/"))
                 .collect(Collectors.collectingAndThen(Collectors.toList(),
                         lst -> {
                             Collections.reverse(lst);
@@ -113,7 +115,7 @@ public class Position {
                     piecePlacementDataStrings[i].split("");
             for (int j = 0; j < fields.length; j++) {
                 if (fields[j].matches("\\d")) {
-                    fields[j] = "1".repeat(Integer.valueOf(fields[j]));
+                    fields[j] = "1".repeat(Integer.parseInt(fields[j]));
                 }
             }
             piecePlacementDataStrings[i] = String.join("", fields);
@@ -249,6 +251,10 @@ public class Position {
         return squares
                 [coordinate.getFile().ordinal()]
                 [coordinate.getRank().ordinal()];
+    }
+
+    public Square getSquare(final String coordinate) {
+        return getSquare(Coordinate.valueOf(coordinate));
     }
 
     /**
@@ -467,8 +473,7 @@ public class Position {
             case CASTLING -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
                 newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, movedPiece);
-            
-                int rank = toRankIndex;
+
                 int rookFromFile, rookToFile;
             
                 if (toFileIndex == 6) { // kingside (e.g., e1 to g1 or e8 to g8)
@@ -481,10 +486,10 @@ public class Position {
                     throw new IllegalArgumentException("Invalid king destination for castling: file " + toFileIndex);
                 }
             
-                newSquares[rookFromFile][rank] = Square.valueOf(rookFromFile, rank, null);
-                newSquares[rookToFile][rank] = Square.valueOf(rookToFile, rank, this.squares[rookFromFile][rank].getPiece());
+                newSquares[rookFromFile][toRankIndex] = Square.valueOf(rookFromFile, toRankIndex, null);
+                newSquares[rookToFile][toRankIndex] = Square.valueOf(rookToFile, toRankIndex, this.squares[rookFromFile][toRankIndex].getPiece());
             
-                if (rank != 0 && rank != 7) {
+                if (toRankIndex != 0 && toRankIndex != 7) {
                     throw new IllegalArgumentException("Trying to castle to a rank that is not the first or the eighth.");
                 }
             }

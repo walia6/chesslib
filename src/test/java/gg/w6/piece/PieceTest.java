@@ -19,8 +19,6 @@ import gg.w6.util.Color;
 
 public class PieceTest {
 
-    private static Set<Class<? extends Piece>> pieceClasses;
-
     static final class TestPiece1 extends Piece {
 
         public TestPiece1(Color color) {
@@ -130,7 +128,7 @@ public class PieceTest {
     @Test
     void testWhiteLetter() throws Exception {
         final Reflections reflections = new Reflections("gg.w6.piece");
-        pieceClasses = reflections.getSubTypesOf(Piece.class).stream()
+        Set<Class<? extends Piece>> pieceClasses = reflections.getSubTypesOf(Piece.class).stream()
                 .filter(cls -> !Modifier.isAbstract(cls.getModifiers()))
                 .collect(Collectors.toSet());
 

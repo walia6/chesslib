@@ -1,17 +1,37 @@
 package gg.w6.util;
 
 import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import gg.w6.core.Position;
 
 import java.util.ArrayList;
-import java.util.concurrent.ForkJoinPool;
 
 public class Perft {
 
     public static long perft(int depth, Position position) {
+        if (depth == 0) return 1L;
+
+        var moves = MoveGenerator.getLegalMoves(position);
+        if (depth == 1) return moves.size();
+
         ForkJoinPool pool = new ForkJoinPool();
-        return pool.invoke(new PerftTask(position, depth));
+        var tasks = new ArrayList<PerftTask>();
+
+        for (Move move : moves) {
+            Position newPosition = position.applyTo(move);
+            tasks.add(new PerftTask(newPosition, depth - 1));
+        }
+
+        tasks.forEach(ForkJoinTask::fork);
+
+        long nodes = 0;
+        for (var task : tasks) {
+            nodes += task.join();
+        }
+
+        return nodes;
     }
 
     private static class PerftTask extends RecursiveTask<Long> {
@@ -25,21 +45,19 @@ public class Perft {
 
         @Override
         protected Long compute() {
+            return perftSequential(depth, position);
+        }
+
+        private long perftSequential(int depth, Position position) {
             if (depth == 0) return 1L;
 
             var moves = MoveGenerator.getLegalMoves(position);
-            if (depth == 1) return (long) moves.size();
+            if (depth == 1) return moves.size();
 
-            var tasks = new ArrayList<PerftTask>();
+            long nodes = 0;
             for (Move move : moves) {
                 Position newPosition = position.applyTo(move);
-                tasks.add(new PerftTask(newPosition, depth - 1));
-            }
-
-            invokeAll(tasks);
-            long nodes = 0;
-            for (var task : tasks) {
-                nodes += task.join();
+                nodes += perftSequential(depth - 1, newPosition);
             }
             return nodes;
         }

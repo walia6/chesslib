@@ -35,3 +35,6 @@ Thumbs.db
 *.bak
 *.tmp
 *.orig
+
+# Java Flight Recorder
+*.jfr

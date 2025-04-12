@@ -1,14 +1,11 @@
 package gg.w6.util;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import gg.w6.core.Position;
 import gg.w6.core.Square;
-import gg.w6.piece.King;
-import gg.w6.piece.Pawn;
-import gg.w6.piece.Piece;
-import gg.w6.piece.Rider;
+import gg.w6.piece.*;
 
 
 /**
@@ -49,16 +46,7 @@ public class PositionValidator {
     // Ensure non-instantiability
     private PositionValidator() {}
 
-    /**
-     * Represents the legality of a chess position.
-     *
-     * <p>This class encapsulates the result of a legality check, indicating whether
-     * the position is legal or illegal, along with an optional error message.</p>
-     *
-     * <p>Use {@link #isLegal()} to check if the position is valid, and {@link #getErrorMessage()}
-     * to retrieve any error message if the position is illegal.</p>
-     */
-    public static enum Legality {
+    public enum Legality {
         LEGAL,
         MISSING_KING,
         TOO_MANY_KINGS,
@@ -93,7 +81,7 @@ public class PositionValidator {
         
         Square whiteKingSquare = null;
         Square blackKingSquare = null;
-        Set<Square> occupiedSquares = new HashSet<>();
+        List<Square> occupiedSquares = new ArrayList<>();
 
         for (File file : File.values()) {
 
@@ -158,8 +146,7 @@ public class PositionValidator {
                     return Legality.CAN_CAPTURE_KING;
             }
 
-            if (piece instanceof Rider) {
-                Rider rider = (Rider) piece;
+            if (piece instanceof final Rider rider) {
                 for (Offset offset : rider.getOffsets()) {
                     for (Coordinate coordinate
                             : offset.extendFrom(
@@ -174,6 +161,9 @@ public class PositionValidator {
                 }
             }
         }
+
+        // TODO: return the rest of the enums? Don't want to slow down getLegalMoves() though...
+
         return Legality.LEGAL;
     }
 }

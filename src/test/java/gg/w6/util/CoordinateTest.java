@@ -10,18 +10,13 @@ import org.junit.jupiter.api.Test;
 
 public class CoordinateTest {
 
-    @BeforeEach
-    private void resetCoordinateCache() {
-        Coordinate.resetCache();
-    }
-
     @Test
     void testValueOfFileRank() {
         File file = File.B;
         Rank rank = Rank.FIVE;
         Coordinate coordinate = Coordinate.valueOf(file, rank);
-        assertEquals(coordinate.getFile(), file);
-        assertEquals(coordinate.getRank(), rank);
+        assertEquals(file, coordinate.getFile());
+        assertEquals(rank, coordinate.getRank());
     }
 
     @Test

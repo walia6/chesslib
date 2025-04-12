@@ -1,9 +1,8 @@
 package gg.w6.util;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents an offset on a chessboard.
@@ -16,112 +15,124 @@ import java.util.concurrent.ConcurrentHashMap;
  * }</pre>
  */
 public class Offset {
-    /**
-     * Cache for storing previously created Offset instances.
-     * This is used to avoid creating multiple instances of the same Offset.
-     * The cache is thread-safe and uses a ConcurrentHashMap for efficient access.
-     * The cache is cleared when the resetCache() method is called.
-     * This is useful for testing purposes or when you want to free up memory.
-     */
-    private static final Map<Key, Offset> CACHE = new ConcurrentHashMap<>();
 
     /**
-     * Creates a new Offset instance with the specified number of files and ranks.
-     * If an Offset with the same files and ranks already exists in the cache, it returns that instance.
+     * Bounds for the offset cache.
+     * Chessboard max move is at most 7 files/ranks away.
+     */
+    private static final int MIN = -Math.max(File.COUNT, Rank.COUNT) + 1;
+    private static final int MAX = Math.max(File.COUNT, Rank.COUNT) - 1;
+
+    /**
+     * Precomputed cache of Offset instances.
+     * Accessed by [files - MIN][ranks - MIN].
+     */
+    private static final Offset[][] CACHE = new Offset[MAX - MIN + 1][MAX - MIN + 1];
+
+    static {
+        for (int files = MIN; files <= MAX; files++) {
+            for (int ranks = MIN; ranks <= MAX; ranks++) {
+                CACHE[files - MIN][ranks - MIN] = new Offset(files, ranks);
+            }
+        }
+    }
+
+    /**
+     * Creates or retrieves an Offset instance for the given files and ranks.
      *
      * @param files The number of files (horizontal movement).
      * @param ranks The number of ranks (vertical movement).
-     * @return A new or cached Offset instance.
+     * @return Cached Offset instance or new one if out of bounds.
      */
     public static Offset valueOf(final int files, final int ranks) {
-        return CACHE.computeIfAbsent(new Key(files, ranks), k -> new Offset(k.files, k.ranks));
+        try {
+            return CACHE[files - MIN][ranks - MIN];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new Offset(files, ranks);
+        }
     }
 
     /**
-     * Resets the cache of Offset instances.
-     * This is useful for testing purposes or when you want to free up memory.
-     * This method is not thread-safe and should be used with caution.
-     */
-    public static void resetCache() {
-        for (Key key : CACHE.keySet()) CACHE.remove(key);
-    }
-
-    /**
-     * The number of files (horizontal movement).
+     * Number of files (horizontal movement).
      */
     private final int files;
 
     /**
-     * The number of ranks (vertical movement).
+     * Number of ranks (vertical movement).
      */
     private final int ranks;
 
     /**
-     * Private constructor to create a new Offset instance.
-     * This constructor is private to ensure that instances are created only through the valueOf method.
-     *
-     * @param files The number of files (horizontal movement).
-     * @param ranks The number of ranks (vertical movement).
+     * Private constructor — use valueOf to create instances.
      */
     private Offset(final int files, final int ranks) {
         this.files = files;
         this.ranks = ranks;
     }
 
-    /**
-     * Returns the number of files (horizontal movement).
-     *
-     * @return The number of files.
-     */
     public int getFiles() { return files; }
 
-    /**
-     * Returns the number of ranks (vertical movement).
-     *
-     * @return The number of ranks.
-     */
     public int getRanks() { return ranks; }
 
-    private record Key(int files, int ranks) {}
+    /**
+     * Lazily extends the offset from the given origin coordinate by the specified range.
+     * Stops iteration if out of bounds.
+     *
+     * @param origin The origin coordinate.
+     * @param range  The maximum number of steps.
+     * @return Iterable of coordinates.
+     */
+    public Iterable<Coordinate> extendFrom(final Coordinate origin, final int range) {
+        return () -> new Iterator<>() {
+            private int steps = 1;
+            private Coordinate next = computeNext();
+
+            private Coordinate computeNext() {
+                if (steps > range) return null;
+                Coordinate coordinate = scale(steps).applyTo(origin);
+                if (coordinate == null) return null;
+                steps++;
+                return coordinate;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Coordinate next() {
+                Coordinate current = next;
+                next = computeNext();
+                return current;
+            }
+        };
+    }
 
     /**
-     * Extends the offset from the given origin coordinate by the specified range.
-     * This method generates a list of coordinates that are reachable from the origin
-     * by applying the offset multiple times.
-     * For example, if the offset is (1, 2) and the origin is (e4),
-     * the method will return a list of coordinates like (f6), (g8), etc.
-     * 
-     * <p>Note: The method will stop adding coordinates to the list if the resulting coordinate
-     * is outside the board boundaries.</p>
+     * Eagerly computes the extension list (pre-existing behavior).
      *
-     * @param origin The origin coordinate from which to extend.
-     * @param range  The maximum number of steps to extend.
-     * @return A list of coordinates reachable from the origin by extending the offset.
+     * @param origin The origin coordinate.
+     * @param range  The maximum number of steps.
+     * @return List of coordinates.
      */
-    public List<Coordinate> extendFrom(final Coordinate origin,
-            final int range) {
-
+    public List<Coordinate> computeExtension(final Coordinate origin, final int range) {
         final List<Coordinate> coordinates = new LinkedList<>();
-        
         for (int steps = 1; steps <= range; steps++) {
             final Coordinate coordinate = scale(steps).applyTo(origin);
             if (coordinate == null) break;
             coordinates.add(coordinate);
         }
-
         return coordinates;
     }
 
     /**
-     * Applies the offset to the given origin coordinate.
-     * This method calculates a new coordinate by adding the offset to the origin.
-     * If the resulting coordinate is outside the board boundaries, it returns null.
-     * 
-     * @param origin The origin coordinate to which the offset will be applied.
-     * @return The new coordinate after applying the offset, or null if out of bounds.
+     * Applies this offset to the given coordinate.
+     *
+     * @param origin The origin coordinate.
+     * @return New coordinate or null if out of bounds.
      */
     public Coordinate applyTo(final Coordinate origin) {
-
         final int newFileIndex = origin.getFile().ordinal() + files;
         final int newRankIndex = origin.getRank().ordinal() + ranks;
 
@@ -129,15 +140,15 @@ public class Offset {
                 || newRankIndex > Rank.COUNT - 1
                 || newFileIndex < 0
                 || newRankIndex < 0
-                ? null : Coordinate.valueOf(newFileIndex, newRankIndex);
+                ? null
+                : Coordinate.valueOf(newFileIndex, newRankIndex);
     }
 
     /**
-     * Scales the offset by the specified factor.
-     * This method multiplies both the files and ranks of the offset by the given factor.
-     * 
-     * @param factor The factor by which to scale the offset.
-     * @return A new Offset instance with scaled files and ranks.
+     * Scales this offset by the given factor.
+     *
+     * @param factor The scaling factor.
+     * @return New scaled Offset instance.
      */
     public Offset scale(final int factor) {
         return valueOf(files * factor, ranks * factor);
@@ -145,8 +156,7 @@ public class Offset {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Offset) {
-            Offset otherOffset = (Offset) obj;
+        if (obj instanceof Offset otherOffset) {
             return files == otherOffset.files && ranks == otherOffset.ranks;
         }
         return false;
