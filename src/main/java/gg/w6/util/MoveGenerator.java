@@ -5,10 +5,10 @@ import java.util.Set;
 
 import gg.w6.core.Position;
 import gg.w6.core.Square;
+import gg.w6.piece.King;
 import gg.w6.piece.Pawn;
 import gg.w6.piece.Piece;
 import gg.w6.piece.Rider;
-import gg.w6.util.PositionValidator.Legality;
 
 public final class MoveGenerator {
     public static Set<Move> generatePseudoLegalMoves(final Position position) {
@@ -192,12 +192,29 @@ public final class MoveGenerator {
         final Set<Move> moves = new HashSet<>();
         for (final Move move : generatePseudoLegalMoves(position)) {
             final Position newPosition = position.applyTo(move);
-            if (PositionValidator.getLegality(newPosition) == Legality.LEGAL) {
+            // find the notToMoveKing
+            Coordinate notToMoveKingCoordinate = null;
+            final Color toMove = newPosition.getToMove();
+            final Color notToMove = toMove == Color.WHITE ? Color.BLACK : Color.WHITE;
+            outerloop:
+            for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
+                for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
+                    final Coordinate candidateCoordinate = Coordinate.valueOf(fileIndex, rankIndex);
+                    final Piece candidate = newPosition.getSquare(candidateCoordinate).getPiece();
+                    if (candidate instanceof final King king && king.getColor() == notToMove) {
+                        notToMoveKingCoordinate = candidateCoordinate;
+                        break outerloop;
+                    }
+                }
+            }
+            if (notToMoveKingCoordinate == null) {
+                continue;
+            }
+            if (!PositionValidator.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
                 moves.add(move);
             }
-    
         }
-    
+
         return moves;
     }
 
