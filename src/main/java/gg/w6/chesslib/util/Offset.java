@@ -89,10 +89,7 @@ public class Offset {
 
             private Coordinate computeNext() {
                 if (steps > range) return null;
-                Coordinate coordinate = scale(steps).applyTo(origin);
-                if (coordinate == null) return null;
-                steps++;
-                return coordinate;
+                return scale(steps++).applyTo(origin);
             }
 
             @Override
@@ -102,7 +99,7 @@ public class Offset {
 
             @Override
             public Coordinate next() {
-                Coordinate current = next;
+                final Coordinate current = next;
                 next = computeNext();
                 return current;
             }
