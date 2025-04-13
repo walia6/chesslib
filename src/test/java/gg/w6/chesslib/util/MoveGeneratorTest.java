@@ -2,6 +2,7 @@ package gg.w6.chesslib.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -19,8 +21,7 @@ public class MoveGeneratorTest {
     @TestFactory
     List<DynamicTest> testGetLegalMoves() throws URISyntaxException, IOException {
         final List<DynamicTest> dynamicTests = new LinkedList<>();
-
-        final Path pathToCSV = Path.of(getClass().getResource("/perft/perft.csv").toURI());
+        final Path pathToCSV = Path.of(Objects.requireNonNull(getClass().getResource("/perft/perft.csv")).toURI());
         final URI testSourceUri = pathToCSV.toUri();
         final List<String> lines = Files.readAllLines(pathToCSV);
 

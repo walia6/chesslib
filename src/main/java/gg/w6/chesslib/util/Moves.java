@@ -204,16 +204,6 @@ public final class Moves {
         return false;
     }
 
-    public static long perft(final Position position, int depth) {
-        if (depth == 0) return 1;
-        long nodes = 0;
-        for (Move move : MoveGenerator.getLegalMoves(position)) {
-            final Position newPosition = position.applyTo(move);
-            nodes += perft(newPosition, depth - 1);
-        }
-        return nodes;
-    }
-
     private Moves() {
     } // ensure non-instantiability
 

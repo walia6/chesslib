@@ -93,13 +93,6 @@ public class Position {
         return recordFields;
     }
 
-    /**
-     * Parses the piece placement data from the FEN string and populates the
-     * squares of the position with the corresponding pieces.
-     * 
-     * @param recordFields the fields of the FEN string
-     * @param position     the Position object to populate
-     */
     private static void parseAndPopulateSquares(final String[] recordFields,
             final Square[][] squares) {
         final String[] piecePlacementDataStrings = Arrays.stream(
