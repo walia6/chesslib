@@ -4,7 +4,15 @@ import gg.w6.chesslib.core.Position;
 import gg.w6.chesslib.core.Square;
 import gg.w6.chesslib.piece.Piece;
 
+import java.util.regex.Pattern;
+
 public class FenParser {
+
+    private static final Pattern CASTLING_RIGHTS_FIELD_PATTERN = Pattern.compile("K?Q?k?q?");
+    private static final Pattern ACTIVE_COLOR_FIELD_PATTERN = Pattern.compile("^[bBwW]$");
+    private static final Pattern HALFMOVE_CLOCK_FIELD_PATTERN = Pattern.compile("^\\d+$");
+    private static final Pattern FULLMOVE_NUMBER_FIELD_PATTERN = Pattern.compile("^\\d+$");
+
 
     private FenParser() {
     } // ensure non-instantiability
@@ -40,35 +48,29 @@ public class FenParser {
     private static String[] getAndVerifyRecordFields(String fen) {
         final String[] recordFields = fen.split(" ");
 
-        if (recordFields.length != 6)
-            throw new IllegalArgumentException(
-                    "Malformed FEN. Too " +
-                            (recordFields.length > 6 ? "many" : "few")
-                            + " fields for FEN \"" + fen + "\".");
+        if (recordFields.length != 6) {
+            throw new IllegalArgumentException("Malformed FEN. Too " + (recordFields.length > 6 ? "many" : "few") + " fields for FEN \"" + fen + "\".");
+        }
 
         // Validate castling rights field:
-        if (!(recordFields[2].equals("-")
-                || recordFields[2].matches("K?Q?k?q?")))
-            throw new IllegalArgumentException(
-                    "Malformed castling rights field \""
-                            + recordFields[2] + "\".");
+        if (!(recordFields[2].equals("-") || CASTLING_RIGHTS_FIELD_PATTERN.matcher(recordFields[2]).matches())) {
+            throw new IllegalArgumentException("Malformed castling rights field \"" + recordFields[2] + "\".");
+        }
 
         // Validate active color field:
-        if (!recordFields[1].matches("^[bBwW]$"))
-            throw new IllegalArgumentException(
-                    "Malformed color field \"" + recordFields[1] + "\".");
+        if (!ACTIVE_COLOR_FIELD_PATTERN.matcher(recordFields[1]).matches()) {
+            throw new IllegalArgumentException("Malformed color field \"" + recordFields[1] + "\".");
+        }
 
         // Validate halfmove clock field:
-        if (!recordFields[4].matches("^\\d+$"))
-            throw new IllegalArgumentException(
-                    "Malformed halfmove clock field \""
-                            + recordFields[4] + "\".");
+        if (!HALFMOVE_CLOCK_FIELD_PATTERN.matcher(recordFields[4]).matches()) {
+            throw new IllegalArgumentException("Malformed halfmove clock field \"" + recordFields[4] + "\".");
+        }
 
         // Validate fullmove number field:
-        if (!recordFields[5].matches("^\\d+$"))
-            throw new IllegalArgumentException(
-                    "Malformed fullmove number field \""
-                            + recordFields[5] + "\".");
+        if (!FULLMOVE_NUMBER_FIELD_PATTERN.matcher(recordFields[5]).matches()) {
+            throw new IllegalArgumentException("Malformed fullmove number field \"" + recordFields[5] + "\".");
+        }
         return recordFields;
     }
 
@@ -87,7 +89,7 @@ public class FenParser {
             final String[] fields =
                     piecePlacementDataStrings[i].split("");
             for (int j = 0; j < fields.length; j++) {
-                if (fields[j].matches("\\d")) {
+                if (Character.isDigit(fields[j].charAt(0))) {
                     fields[j] = "1".repeat(Integer.parseInt(fields[j]));
                 }
             }
