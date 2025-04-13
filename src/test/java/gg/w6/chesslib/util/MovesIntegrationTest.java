@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,10 +38,11 @@ public class MovesIntegrationTest {
 
 
     @TestFactory
-    Collection<DynamicTest> testGetLegalMovesAndGenerateSANIntegration() throws Exception {
+    Collection<DynamicTest> testGetLegalMoves() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
         URL dir = getClass().getResource("/positions/");
+        if (dir == null) { throw new FileNotFoundException();}
         Path path = Path.of(dir.toURI());
 
         try (Stream<Path> files = Files.list(path)) {
@@ -56,23 +58,23 @@ public class MovesIntegrationTest {
                                     Position position = Position.valueOf(testCase.start.fen);
                                     Set<Move> legalMoves = MoveGenerator.getLegalMoves(position);
 
-                                    Set<String> generatedSansWithFen = legalMoves.stream()
+                                    Set<String> legalMoveStrings = legalMoves.stream()
                                         .map(move -> {
-                                            String san = Moves.generateSAN(move, position);
+                                            String moveString = move.toString();
                                             String fen = position.applyTo(move).generateFEN();
-                                            return san + " | " + fen;
+                                            return moveString + " | " + fen;
                                         })
                                         .collect(Collectors.toSet());
 
-                                    Set<String> expectedSansWithFen = testCase.expected.stream()
+                                    Set<String> expectedLegalMoveStrings = testCase.expected.stream()
                                         .map(expected -> expected.move + " | " + expected.fen)
                                         .collect(Collectors.toSet());
-                                    if (!expectedSansWithFen.equals(generatedSansWithFen)) {
-    Set<String> missing = new HashSet<>(expectedSansWithFen);
-    missing.removeAll(generatedSansWithFen);
+                                    if (!expectedLegalMoveStrings.equals(legalMoveStrings)) {
+    Set<String> missing = new HashSet<>(expectedLegalMoveStrings);
+    missing.removeAll(legalMoveStrings); 
 
-    Set<String> unexpected = new HashSet<>(generatedSansWithFen);
-    unexpected.removeAll(expectedSansWithFen);
+    Set<String> unexpected = new HashSet<>(legalMoveStrings);
+    unexpected.removeAll(expectedLegalMoveStrings);
 
     assertAll(
         "Mismatch in expected and generated SAN+FEN moves for position: " + testCase.start.fen,

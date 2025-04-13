@@ -37,7 +37,13 @@ public class Move {
     
     @Override
     public String toString() {
-        return "From: " + from + " To: " + to;
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(from);
+        stringBuilder.append(to);
+        if (moveType == MoveType.PROMOTION) {
+            stringBuilder.append(Character.toLowerCase(promotionPiece.getLetter()));
+        }
+        return stringBuilder.toString();
     }
 
     @Override
