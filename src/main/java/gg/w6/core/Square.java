@@ -35,7 +35,7 @@ public class Square {
     /**
      * The piece occupying this square, or null if the square is empty.
      */
-    private Piece piece;
+    private final Piece piece;
 
     /**
      * The coordinate of this square on the chessboard.

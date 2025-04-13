@@ -58,7 +58,7 @@ public final class Moves {
                 }
             );
             
-            appendSANSuffix(sanStringBuilder, move, position.applyTo(move));
+            appendSANSuffix(sanStringBuilder, position.applyTo(move));
             return sanStringBuilder.toString();
         }
 
@@ -98,7 +98,7 @@ public final class Moves {
             if (isPieceAmbiguous(move, position)) {
                 if (fileIsAmbiguous && rankIsAmbiguous) {
                     sanStringBuilder.append(move.getFrom());
-                } else if (!(fileIsAmbiguous && !rankIsAmbiguous)) {
+                } else if (!fileIsAmbiguous) {
                     sanStringBuilder.append(move.getFrom().getFile());
                 } else {
                     sanStringBuilder.append(move.getFrom().getRank());
@@ -115,7 +115,7 @@ public final class Moves {
 
         }
 
-        appendSANSuffix(sanStringBuilder, move, position.applyTo(move));
+        appendSANSuffix(sanStringBuilder, position.applyTo(move));
 
         return sanStringBuilder.toString();
     }
@@ -125,8 +125,8 @@ public final class Moves {
 
 
 
-    private static void appendSANSuffix(final StringBuilder sanStringBuilder, final Move move,
-            final Position position) {
+    private static void appendSANSuffix(final StringBuilder sanStringBuilder,
+                                        final Position position) {
         if (!Positions.isKingToMoveInCheck(position)) return;
         sanStringBuilder.append(MoveGenerator.getLegalMoves(position).isEmpty() ? "#" : "+");
     }

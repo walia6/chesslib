@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CoordinateTest {
@@ -46,8 +45,8 @@ public class CoordinateTest {
     @Test
     void testValueOfIntInt() {
         Coordinate coordinate = Coordinate.valueOf(3, 5);
-        assertEquals(coordinate.getFile(), File.D);
-        assertEquals(coordinate.getRank(), Rank.SIX);
+        assertEquals(File.D, coordinate.getFile());
+        assertEquals(Rank.SIX, coordinate.getRank());
     }
 
     @Test
@@ -65,14 +64,14 @@ public class CoordinateTest {
     @Test
     void testValueOfString() {
         Coordinate coordinate = Coordinate.valueOf("g5");
-        assertEquals(coordinate.getFile(), File.G);
-        assertEquals(coordinate.getRank(), Rank.FIVE);
+        assertEquals(File.G, coordinate.getFile());
+        assertEquals(Rank.FIVE, coordinate.getRank());
     }
 
     @Test
     void testToString() {
         Coordinate coordinate = Coordinate.valueOf(File.H, Rank.SEVEN);
-        assertEquals(coordinate.toString(), "h7");
+        assertEquals("h7", coordinate.toString());
     }
 
     @Test
@@ -97,7 +96,7 @@ public class CoordinateTest {
     @Test
     void testEqualsFalseString() {
         Coordinate coordinate = Coordinate.valueOf("a1");
-        assertNotEquals(coordinate, "Hello, world!");
+        assertNotEquals("Hello, world!", coordinate);
     }
 
 

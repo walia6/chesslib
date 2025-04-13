@@ -67,8 +67,8 @@ public class PieceTest {
             assertInstanceOf(currentPieceClass, whitePiece);
             assertInstanceOf(currentPieceClass, blackPiece);
 
-            assertEquals(whitePiece.getColor(), Color.WHITE);
-            assertEquals(blackPiece.getColor(), Color.BLACK);
+            assertEquals(Color.WHITE, whitePiece.getColor());
+            assertEquals(Color.BLACK, blackPiece.getColor());
         }
     }
 
@@ -122,7 +122,7 @@ public class PieceTest {
     void testEqualsFalseString() {
         final Piece piece = new TestPiece1(Color.WHITE);
         
-        assertNotEquals(piece, "Hello, world!");
+        assertNotEquals("Hello, world!", piece);
     }
 
     @Test

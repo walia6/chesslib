@@ -28,10 +28,10 @@ public enum Color {
      * @throws IllegalArgumentException if the character does not represent a valid color.
      */
     public static Color valueOf(final char c) {
-        switch (c) {
-            case 'b': case 'B': return BLACK;
-            case 'w': case 'W': return WHITE;
-        }
-        throw new IllegalArgumentException("Malformed color '" + c + "'.");
+        return switch (c) {
+            case 'b', 'B' -> BLACK;
+            case 'w', 'W' -> WHITE;
+            default -> throw new IllegalArgumentException("Malformed color '" + c + "'.");
+        };
     }
 }

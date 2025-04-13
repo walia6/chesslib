@@ -3,13 +3,11 @@ package gg.w6.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class OffsetTest {
@@ -84,7 +82,7 @@ public class OffsetTest {
     void testEqualsFalseString() {
         Offset offset = Offset.valueOf(2, -4);
 
-        assertNotEquals(offset, "Hello, world!");
+        assertNotEquals("Hello, world!", offset);
     }
 
     @Test

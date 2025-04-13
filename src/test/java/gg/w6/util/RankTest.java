@@ -12,6 +12,6 @@ public class RankTest {
 
     @Test
     void testToString() {
-        assertEquals(Rank.SEVEN.toString(), "7");
+        assertEquals("7", Rank.SEVEN.toString());
     }
 }

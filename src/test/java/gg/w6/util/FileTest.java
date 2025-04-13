@@ -12,6 +12,6 @@ public class FileTest {
 
     @Test
     void testToString() {
-        assertEquals(File.D.toString(), "d");
+        assertEquals("d", File.D.toString());
     }
 }

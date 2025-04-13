@@ -2,6 +2,8 @@ package gg.w6.util;
 
 import gg.w6.piece.Piece;
 
+import java.util.Objects;
+
 public class Move {
 
     private final Coordinate from;
@@ -46,7 +48,7 @@ public class Move {
         return from.equals(other.from)
             && to.equals(other.to)
             && moveType == other.moveType
-            && (promotionPiece == null ? other.promotionPiece == null : promotionPiece.equals(other.promotionPiece));
+            && (Objects.equals(promotionPiece, other.promotionPiece));
     }
 
     @Override

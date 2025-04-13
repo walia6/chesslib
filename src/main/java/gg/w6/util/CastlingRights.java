@@ -96,8 +96,7 @@ public class CastlingRights {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CastlingRights) {
-            CastlingRights otherCastlingRights = (CastlingRights) obj;
+        if (obj instanceof CastlingRights otherCastlingRights) {
             return otherCastlingRights.whiteKingside == whiteKingside
                     && otherCastlingRights.whiteQueenside == whiteQueenside
                     && otherCastlingRights.blackKingside == blackKingside

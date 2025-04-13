@@ -13,13 +13,13 @@ public class ColorTest {
 
     @Test
     void TestValueOfW() {
-        assertEquals(Color.valueOf('W'), Color.WHITE);
-        assertEquals(Color.valueOf('w'), Color.WHITE);
+        assertEquals(Color.WHITE, Color.valueOf('W'));
+        assertEquals(Color.WHITE, Color.valueOf('w'));
     }
 
     @Test
     void TestValueOfB() {
-        assertEquals(Color.valueOf('B'), Color.BLACK);
-        assertEquals(Color.valueOf('b'), Color.BLACK);
+        assertEquals(Color.BLACK, Color.valueOf('B'));
+        assertEquals(Color.BLACK, Color.valueOf('b'));
     }
 }

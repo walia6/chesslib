@@ -127,6 +127,6 @@ public class CastlingRightsTest {
     @Test
     void testEqualsFalseString() {
         CastlingRights castlingRights = new CastlingRights();
-        assertNotEquals(castlingRights, "Hello, world!");
+        assertNotEquals("Hello, world!", castlingRights);
     }
 }

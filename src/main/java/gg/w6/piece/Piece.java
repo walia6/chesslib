@@ -62,18 +62,18 @@ public abstract class Piece {
     static public Piece valueOf(char c) {
         Color color = Character.toUpperCase(c) == c ? Color.WHITE : Color.BLACK;
 
-        switch (Character.toUpperCase(c)) {
-            case 'P': return new Pawn(color);
-            case 'N': return new Knight(color);
-            case 'B': return new Bishop(color);
-            case 'R': return new Rook(color);
-            case 'Q': return new Queen(color);
-            case 'K': return new King(color);
-        }
+        return switch (Character.toUpperCase(c)) {
+            case 'P' -> new Pawn(color);
+            case 'N' -> new Knight(color);
+            case 'B' -> new Bishop(color);
+            case 'R' -> new Rook(color);
+            case 'Q' -> new Queen(color);
+            case 'K' -> new King(color);
+            default -> throw new IllegalArgumentException
+                    ("Malformed piece char '" + c + "''.");
+        };
 
-        throw new IllegalArgumentException
-                ("Malformed piece char '" + String.valueOf(c) + "''.");
-    } 
+    }
 
 
     @Override
@@ -83,8 +83,6 @@ public abstract class Piece {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Piece && getClass().equals(obj.getClass())
-                ? ((Piece) obj).getLetter() == getLetter()
-                : false;
+        return obj instanceof Piece && getClass().equals(obj.getClass()) && ((Piece) obj).getLetter() == getLetter();
     }
 }

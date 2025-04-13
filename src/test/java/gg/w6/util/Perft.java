@@ -16,7 +16,7 @@ public class Perft {
         var moves = MoveGenerator.getLegalMoves(position);
         if (depth == 1) return moves.size();
 
-        ForkJoinPool pool = new ForkJoinPool();
+        new ForkJoinPool();
         var tasks = new ArrayList<PerftTask>();
 
         for (Move move : moves) {
