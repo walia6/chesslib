@@ -4,13 +4,16 @@ import gg.w6.chesslib.model.piece.King;
 import gg.w6.chesslib.model.piece.Piece;
 import gg.w6.chesslib.util.*;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 
 /**
  * Represents a chess position, including the arrangement of pieces on the
  * board, castling rights, active color, en passant target square, halfmove
  * clock, and fullmove number.
  */
-public class Position {
+public class Position implements Iterable<Square> {
 
 
     /**
@@ -345,10 +348,10 @@ public class Position {
             newSquares[fileIndex] = this.squares[fileIndex].clone();
         }
 
-        final int fromFileIndex = move.getFrom().getFile().ordinal();
-        final int fromRankIndex = move.getFrom().getRank().ordinal();
-        final int toFileIndex = move.getTo().getFile().ordinal();
-        final int toRankIndex = move.getTo().getRank().ordinal();
+        final int fromFileIndex = move.getFrom().getFileIndex();
+        final int fromRankIndex = move.getFrom().getRankIndex();
+        final int toFileIndex = move.getTo().getFileIndex();
+        final int toRankIndex = move.getTo().getRankIndex();
 
         final MoveType moveType = move.getMoveType();
         final Piece movedPiece = squares[fromFileIndex][fromRankIndex].getPiece();
@@ -446,6 +449,31 @@ public class Position {
     public String toString() {
         return this.generateFEN();
     }
-    
-    
+
+
+    @Override
+    public @NotNull Iterator<Square> iterator() {
+        return new Iterator<>() {
+            private int fileIndex = 0;
+            private int rankIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return fileIndex < File.COUNT && rankIndex < Rank.COUNT;
+            }
+
+            @Override
+            public Square next() {
+                final Square square = squares[fileIndex][rankIndex];
+
+                rankIndex++;
+                if (rankIndex == Rank.COUNT) {
+                    rankIndex = 0;
+                    fileIndex++;
+                }
+
+                return square;
+            }
+        };
+    }
 }
