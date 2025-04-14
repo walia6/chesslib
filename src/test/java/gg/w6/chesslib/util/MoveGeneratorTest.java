@@ -13,13 +13,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gg.w6.chesslib.model.Move;
 import gg.w6.chesslib.util.jsonmappings.ExpectedMove;
 import gg.w6.chesslib.util.jsonmappings.TestCase;
 import gg.w6.chesslib.util.jsonmappings.TestCaseFile;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import gg.w6.chesslib.core.Position;
+import gg.w6.chesslib.model.Position;
 import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;

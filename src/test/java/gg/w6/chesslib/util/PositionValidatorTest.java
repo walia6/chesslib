@@ -1,6 +1,6 @@
 package gg.w6.chesslib.util;
 
-import gg.w6.chesslib.core.Position;
+import gg.w6.chesslib.model.Position;
 import gg.w6.chesslib.util.PositionValidator.Legality;
 
 import org.junit.jupiter.api.Test;

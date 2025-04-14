@@ -1,8 +1,11 @@
 package gg.w6.chesslib.util;
 
-import gg.w6.chesslib.core.Position;
-import gg.w6.chesslib.piece.Pawn;
-import gg.w6.chesslib.piece.Piece;
+import gg.w6.chesslib.model.Coordinate;
+import gg.w6.chesslib.model.MoveType;
+import gg.w6.chesslib.model.Position;
+import gg.w6.chesslib.model.Move;
+import gg.w6.chesslib.model.piece.Pawn;
+import gg.w6.chesslib.model.piece.Piece;
 
 public final class Moves {
 
@@ -16,7 +19,7 @@ public final class Moves {
     }
 
     public static Coordinate getEnPassantTarget(final Move move,
-            final Position position) {
+                                                final Position position) {
         final Piece movedPiece = position.getSquare(move.getFrom()).getPiece();
 
         if (!(movedPiece instanceof Pawn))

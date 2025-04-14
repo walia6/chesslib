@@ -1,11 +1,10 @@
 package gg.w6.chesslib.util;
 
-import gg.w6.chesslib.core.Position;
-import gg.w6.chesslib.core.Square;
-import gg.w6.chesslib.piece.King;
-import gg.w6.chesslib.piece.Pawn;
-import gg.w6.chesslib.piece.Piece;
-import gg.w6.chesslib.piece.Rider;
+import gg.w6.chesslib.model.*;
+import gg.w6.chesslib.model.piece.King;
+import gg.w6.chesslib.model.piece.Pawn;
+import gg.w6.chesslib.model.piece.Piece;
+import gg.w6.chesslib.model.piece.Rider;
 
 public class Positions {
 

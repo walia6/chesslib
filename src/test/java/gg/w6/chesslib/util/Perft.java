@@ -2,7 +2,8 @@ package gg.w6.chesslib.util;
 
 import java.util.concurrent.RecursiveTask;
 
-import gg.w6.chesslib.core.Position;
+import gg.w6.chesslib.model.Position;
+import gg.w6.chesslib.model.Move;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;

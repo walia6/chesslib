@@ -1,8 +1,7 @@
 package gg.w6.chesslib.util;
 
-import gg.w6.chesslib.core.Position;
-import gg.w6.chesslib.core.Square;
-import gg.w6.chesslib.piece.Piece;
+import gg.w6.chesslib.model.*;
+import gg.w6.chesslib.model.piece.Piece;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

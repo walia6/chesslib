@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gg.w6.chesslib.model.Color;
+import gg.w6.chesslib.model.PromotionCandidate;
 import org.reflections.Reflections;
 
-import gg.w6.chesslib.piece.Piece;
+import gg.w6.chesslib.model.piece.Piece;
 
 public class Pieces {
 
@@ -19,7 +21,7 @@ public class Pieces {
 
         final Set<Piece> whitePromotionPieces = new HashSet<>();
         final Set<Piece> blackPromotionPieces = new HashSet<>();
-        Reflections reflections = new Reflections("gg.w6.chesslib.piece");
+        Reflections reflections = new Reflections("gg.w6.chesslib.model.piece");
 
         for (Class<?> annotatedClass : reflections.getTypesAnnotatedWith(
                     PromotionCandidate.class)) {

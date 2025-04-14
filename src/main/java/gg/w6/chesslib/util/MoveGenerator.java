@@ -3,12 +3,8 @@ package gg.w6.chesslib.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import gg.w6.chesslib.core.Position;
-import gg.w6.chesslib.core.Square;
-import gg.w6.chesslib.piece.King;
-import gg.w6.chesslib.piece.Pawn;
-import gg.w6.chesslib.piece.Piece;
-import gg.w6.chesslib.piece.Rider;
+import gg.w6.chesslib.model.*;
+import gg.w6.chesslib.model.piece.*;
 
 public final class MoveGenerator {
     public static Set<Move> generatePseudoLegalMoves(final Position position) {
@@ -32,9 +28,9 @@ public final class MoveGenerator {
                 boolean castleCheck = false;
     
                 if (pieceColor != toMove) {
-                    if ((piece instanceof Pawn) ||
-                            ((toMove == Color.WHITE && !canWhiteCastleKingside && !canWhiteCastleQueenside) ||
-                             (toMove == Color.BLACK && !canBlackCastleKingside && !canBlackCastleQueenside))) {
+                    if (piece instanceof Pawn
+                            || toMove == Color.WHITE && !canWhiteCastleKingside && !canWhiteCastleQueenside
+                            || toMove == Color.BLACK && !canBlackCastleKingside && !canBlackCastleQueenside) {
                         continue;
                     }
                     castleCheck = true;

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-import gg.w6.chesslib.core.Position;
+import gg.w6.chesslib.model.Position;
 
 public class MovesIntegrationTest {
 
