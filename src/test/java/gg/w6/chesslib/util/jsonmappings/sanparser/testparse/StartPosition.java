@@ -1,4 +1,4 @@
-package gg.w6.chesslib.util.jsonmappings;
+package gg.w6.chesslib.util.jsonmappings.sanparser.testparse;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

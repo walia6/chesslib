@@ -79,29 +79,6 @@ public class Position implements Iterable<Square> {
             final Coordinate enPassantTargets, final Color toMove,
             final int halfMoveClock, final int fullMoves) {
 
-        if (squares.length == File.COUNT){
-            for (int fileIndex = 0; fileIndex < squares.length; fileIndex++) {
-                if (squares[fileIndex].length != Rank.COUNT) {
-                    throw new IllegalArgumentException("Malformed Squares[][]");
-                }
-                for (int rankIndex = 0; rankIndex < squares[0].length;
-                        rankIndex++) {
-                    if (squares[fileIndex][rankIndex] == null) {
-                        throw new NullPointerException("Found a null square!");
-                    } else {
-                        final Square square = squares[fileIndex][rankIndex];
-                        if (!square.getCoordinate().equals(Coordinate.valueOf(fileIndex, rankIndex))) {
-                            throw new IllegalArgumentException(
-                                    "Found a square with a non-matching"
-                                    + " coordinate. Expected: (" + fileIndex + ", " + rankIndex + "). Got: (" + square.getCoordinate().getFile().ordinal() + ", " + square.getCoordinate().getRank().ordinal() + ")");
-                        }
-                    }
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("Malformed Squares[][]");
-        }
-
         this.squares = squares;
         this.castlingRights = castlingRights;
         this.enPassantTarget = enPassantTargets;

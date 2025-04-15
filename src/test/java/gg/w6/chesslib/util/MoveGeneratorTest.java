@@ -14,9 +14,9 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gg.w6.chesslib.model.Move;
-import gg.w6.chesslib.util.jsonmappings.ExpectedMove;
-import gg.w6.chesslib.util.jsonmappings.TestCase;
-import gg.w6.chesslib.util.jsonmappings.TestCaseFile;
+import gg.w6.chesslib.util.jsonmappings.movegenerator.testgetlegalmoves.ExpectedMove;
+import gg.w6.chesslib.util.jsonmappings.movegenerator.testgetlegalmoves.TestCase;
+import gg.w6.chesslib.util.jsonmappings.movegenerator.testgetlegalmoves.TestCaseFile;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MoveGeneratorTest {
 
-    private static final String PERFT_TEST_CASES_CSV_FILE_PATH = "/perft/perft.csv";
+    private static final String PERFT_TEST_CASES_CSV_FILE_PATH = "/testcases/movegeneratortest/perft/perft.csv";
     private static final String PERFT_TEST_CASES_CSV_FILE_HEADER = "fen,depth,perft";
-    private static final String GET_LEGAL_MOVES_TEST_CASES_JSON_FILES_PATH = "/positions/";
+    private static final String GET_LEGAL_MOVES_TEST_CASES_JSON_FILES_PATH = "/testcases/movegeneratortest/positions/";
 
     @TestFactory
     List<DynamicTest> generatePerftTests() throws URISyntaxException, IOException {
@@ -66,16 +66,17 @@ public class MoveGeneratorTest {
     @TestFactory
     List<DynamicTest> testGetLegalMoves() throws URISyntaxException, IOException {
         final URL pathToJsonFolderURL = getClass().getResource(GET_LEGAL_MOVES_TEST_CASES_JSON_FILES_PATH);
+
         if (pathToJsonFolderURL == null) {
             throw new FileNotFoundException(GET_LEGAL_MOVES_TEST_CASES_JSON_FILES_PATH);
         }
-        final Path pathToJsonFolder = Path.of(pathToJsonFolderURL.toURI());
 
+        final Path pathToJsonFolder = Path.of(pathToJsonFolderURL.toURI());
         final List<DynamicTest> dynamicTests = new ArrayList<>();
         final ObjectMapper objectMapper = new ObjectMapper();
 
-        try(Stream<Path> files = Files.list(pathToJsonFolder)) {
-            for (Path pathToFile : (Iterable<Path>) files::iterator) {
+        try(final Stream<Path> files = Files.list(pathToJsonFolder)) {
+            for (final Path pathToFile : (Iterable<Path>) files::iterator) {
                 final File file = pathToFile.toFile();
                 if (!file.toString().endsWith(Json.FILE_EXTENSION)) {
                     continue;

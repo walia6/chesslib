@@ -10,7 +10,7 @@ import gg.w6.chesslib.model.Position;
 public class MovesIntegrationTest {
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/states/king_in_check.csv", numLinesToSkip = 1)
+    @CsvFileSource(resources = "/testcases/positionvalidatortest/states/king_in_check.csv", numLinesToSkip = 1)
     void testIsKingToMoveInCheckIntegration (String fen, boolean expected) {
         final Position position = Position.valueOf(fen);
         final boolean actual = Positions.isKingToMoveInCheck(position);
