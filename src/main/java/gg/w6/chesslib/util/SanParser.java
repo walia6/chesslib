@@ -116,7 +116,8 @@ public class SanParser {
             Piece p = square.getPiece();
             if (p == null) continue;
             if (!p.getColor().equals(activeColor)) continue;
-            if (!p.getClass().getSimpleName().startsWith(symbol)) continue;
+            if (Character.toUpperCase(p.getLetter()) != symbol.charAt(0)) continue;
+
 
             if (p instanceof Rider) {
                 Rider rider = (Rider) p;
