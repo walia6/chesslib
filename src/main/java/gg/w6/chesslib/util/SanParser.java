@@ -14,7 +14,7 @@ public class SanParser {
     private static final Pattern CASTLING_LONG = Pattern.compile("O-O-O");
     private static final Pattern PAWN_PROMOTION = Pattern.compile("^([a-h])?(x)?([a-h][18])=([NBRQ])$");
     private static final Pattern PAWN_MOVE = Pattern.compile("^([a-h])?(x)?([a-h][2-7])$");
-    private static final Pattern PIECE_MOVE = Pattern.compile("^([NBRQK])([a-h1-8]?)(x)?([a-h][1-8])$");
+    private static final Pattern PIECE_MOVE = Pattern.compile("^([NBRQK])([a-h]?[1-8]?)(x)?([a-h][1-8])$");
 
     public static Move parse(final String san, final Position position) {
         final String cleanSan = san.replace("+", "").replace("#", "");
@@ -61,9 +61,8 @@ public class SanParser {
         int toRank = to.getRankIndex();
         int fromRank = position.getToMove() == Color.WHITE ? toRank - 1 : toRank + 1;
 
-        Coordinate from = null;
+        final Coordinate from;
         if (isCapture) {
-            int fileIdx = to.getFileIndex();
             int offset = fromFile.charAt(0) - 'a';
             from = Coordinate.valueOf(offset, fromRank);
         } else {
@@ -83,7 +82,7 @@ public class SanParser {
         int toRank = to.getRankIndex();
         int fromRank = position.getToMove() == Color.WHITE ? toRank - 1 : toRank + 1;
 
-        Coordinate from = null;
+        Coordinate from;
         if (isCapture) {
             int fileIdx = fromFile.charAt(0) - 'a';
             from = Coordinate.valueOf(fileIdx, fromRank);
@@ -119,24 +118,14 @@ public class SanParser {
             if (Character.toUpperCase(p.getLetter()) != symbol.charAt(0)) continue;
 
 
-            if (p instanceof Rider) {
-                Rider rider = (Rider) p;
+            if (p instanceof final Rider rider) {
                 for (Offset offset : rider.getOffsets()) {
-                    for (Coordinate coord : offset.extendFrom(square.getCoordinate(), rider.getRange())) {
-                        if (coord.equals(to)) {
+                    for (Coordinate coordinate : offset.extendFrom(square.getCoordinate(), rider.getRange())) {
+                        if (coordinate.equals(to)) {
                             candidates.add(square.getCoordinate());
                             break;
                         }
-                        if (position.getSquare(coord).getPiece() != null) break;
-                    }
-                }
-            } else if (p instanceof Knight || p instanceof King) {
-                Rider rider = (Rider) p;
-                for (Offset offset : rider.getOffsets()) {
-                    for (Coordinate coord : offset.extendFrom(square.getCoordinate(), 1)) {
-                        if (coord.equals(to)) {
-                            candidates.add(square.getCoordinate());
-                        }
+                        if (position.getSquare(coordinate).getPiece() != null) break;
                     }
                 }
             }
@@ -185,13 +174,13 @@ public class SanParser {
     }
 
     private static Piece createPieceFromSymbol(String symbol, Color color) {
-        switch (symbol) {
-            case "Q": return new Queen(color);
-            case "R": return new Rook(color);
-            case "B": return new Bishop(color);
-            case "N": return new Knight(color);
-            default: throw new IllegalArgumentException("Unknown promotion symbol: " + symbol);
-        }
+        return switch (symbol) {
+            case "Q" -> new Queen(color);
+            case "R" -> new Rook(color);
+            case "B" -> new Bishop(color);
+            case "N" -> new Knight(color);
+            default -> throw new IllegalArgumentException("Unknown promotion symbol: " + symbol);
+        };
     }
 
 }
