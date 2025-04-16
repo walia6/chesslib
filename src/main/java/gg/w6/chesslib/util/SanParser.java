@@ -40,7 +40,7 @@ public class SanParser {
             return parsePieceMove(piece, position, san);
         }
 
-        throw new IllegalArgumentException("Unrecognized SAN: " + san);
+        throw new IllegalArgumentException("Unrecognized SAN: " + san + ". fen=" + position.generateFEN());
     }
 
     private static Move parseCastling(Position position, boolean kingside) {
@@ -154,8 +154,11 @@ public class SanParser {
                 char ch = disambiguation.charAt(0);
                 if (ch >= 'a' && ch <= 'h' && c.getFile().name().toLowerCase().charAt(0) == ch) {
                     return c;
-                } else if (ch >= '1' && ch <= '8' && c.getRank().name().equals("_" + ch)) {
-                    return c;
+                } else if (ch >= '1' && ch <= '8') {
+                    int disambiguationRankIndex = ch - '1';
+                    if (c.getRankIndex() == disambiguationRankIndex) {
+                        return c;
+                    }
                 }
             } else if (disambiguation.length() == 2) {
                 Coordinate d = Coordinate.valueOf(disambiguation);
