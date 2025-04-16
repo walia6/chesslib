@@ -1,6 +1,7 @@
 package gg.w6.chesslib.model;
 
 import gg.w6.chesslib.model.piece.Piece;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -105,6 +106,7 @@ public class Square {
      * Returns the piece occupying this square, or null if the square is empty.
      * @return The piece on the square, or null if empty.
      */
+    @Nullable
     public Piece getPiece() {
         return piece;
     }
