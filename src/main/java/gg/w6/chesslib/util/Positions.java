@@ -5,6 +5,10 @@ import gg.w6.chesslib.model.piece.King;
 import gg.w6.chesslib.model.piece.Pawn;
 import gg.w6.chesslib.model.piece.Piece;
 import gg.w6.chesslib.model.piece.Rider;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Positions {
 
@@ -71,5 +75,18 @@ public class Positions {
         }
         return false;
     }
-    
+
+    @NotNull
+    public static List<Coordinate> getRiderVision(@NotNull final Rider rider, @NotNull final Coordinate originCoordinate, @NotNull final Position position) {
+        final List<Coordinate> visionList = new ArrayList<>();
+        for (final Offset offset : rider.getOffsets()) {
+            for (final Coordinate candidate : offset.extendFrom(originCoordinate, rider.getRange())) {
+                visionList.add(candidate);
+                if (position.getSquare(candidate) != null) {
+                    break;
+                }
+            }
+        }
+        return visionList;
+    }
 }

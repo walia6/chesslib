@@ -30,7 +30,7 @@ public class SanParserTest {
     private static final String PARSE_TEST_CASES_JSON_FILES_PATH = "/testcases/sanparsertest/positions/";
 
     @TestFactory
-    List<DynamicTest> testGetLegalMoves() throws URISyntaxException, IOException {
+    List<DynamicTest> testParse() throws URISyntaxException, IOException {
         final URL pathToJsonFolderURL = getClass().getResource(PARSE_TEST_CASES_JSON_FILES_PATH);
 
         if (pathToJsonFolderURL == null) {
@@ -57,8 +57,8 @@ public class SanParserTest {
                         final String displayName = "[" + file.getName() + "] san=\"" + expectedMove.san + "\" fen=\"" + testCase.start.fen + "\"";
                         final Executable executable = () -> {
                             final Move actualMove = SanParser.parse(expectedMove.san, startingPosition);
-                            assertEquals(expectedMove.uci, actualMove.toString(), () -> {return "Incorrect UCI. san=\"" + expectedMove.san + "\" fen=\"" + testCase.start.fen + "\"";});
-                            assertEquals(MoveType.valueOf(expectedMove.movetype), actualMove.getMoveType(), () -> {return "Incorrect MoveType. san=\"" + expectedMove.san + "\" fen=\"" + testCase.start.fen + "\"";});
+                            assertEquals(expectedMove.uci, actualMove.toString(), () -> "Incorrect UCI. san=\"" + expectedMove.san + "\" fen=\"" + testCase.start.fen + "\"");
+                            assertEquals(MoveType.valueOf(expectedMove.movetype), actualMove.getMoveType(), () -> "Incorrect MoveType. san=\"" + expectedMove.san + "\" fen=\"" + testCase.start.fen + "\"");
                         };
                         dynamicTests.add(DynamicTest.dynamicTest(displayName, testSourceUri, executable));
                     }
