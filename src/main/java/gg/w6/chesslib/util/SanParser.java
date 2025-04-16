@@ -37,7 +37,7 @@ public class SanParser {
 
         final Matcher piece = PIECE_MOVE.matcher(cleanSan);
         if (piece.matches()) {
-            return parsePieceMove(piece, position);
+            return parsePieceMove(piece, position, san);
         }
 
         throw new IllegalArgumentException("Unrecognized SAN: " + san);
@@ -103,7 +103,7 @@ public class SanParser {
         return new Move(from, to, MoveType.NORMAL, null);
     }
 
-    private static Move parsePieceMove(Matcher matcher, Position position) {
+    private static Move parsePieceMove(Matcher matcher, Position position, String san) {
         String symbol = matcher.group(1);
         String disambiguation = matcher.group(2);
         String toStr = matcher.group(4);
@@ -142,11 +142,11 @@ public class SanParser {
             }
         }
 
-        Coordinate from = disambiguate(candidates, disambiguation);
+        Coordinate from = disambiguate(candidates, disambiguation, position, to, san);
         return new Move(from, to, MoveType.NORMAL, null);
     }
 
-    private static Coordinate disambiguate(List<Coordinate> candidates, String disambiguation) {
+    private static Coordinate disambiguate(List<Coordinate> candidates, String disambiguation, Position position, Coordinate to, String san) {
         if (candidates.size() == 1) return candidates.get(0);
 
         for (Coordinate c : candidates) {
@@ -163,7 +163,22 @@ public class SanParser {
             }
         }
 
-        throw new IllegalArgumentException("Ambiguous SAN: " + candidates + " with disambiguation: " + disambiguation);
+        final List<Coordinate> legalCandidateCoordinates = new ArrayList<>();
+
+        for (Coordinate c : candidates) {
+            final Move candidateMove = new Move(c, to, MoveType.NORMAL, null);
+            final Position newPosition = position.applyTo(candidateMove);
+            final PositionValidator.Legality legality = PositionValidator.getLegality(newPosition);
+            if (legality != PositionValidator.Legality.CAN_CAPTURE_KING) {
+                legalCandidateCoordinates.add(c);
+            }
+        }
+
+        if (legalCandidateCoordinates.size() == 1) {
+            return legalCandidateCoordinates.get(0);
+        }
+
+        throw new IllegalArgumentException("Ambiguous SAN: " + candidates + " with disambiguation: " + disambiguation +  ". san=\"" + san + "\" fen=" + position.generateFEN());
     }
 
     private static Piece createPieceFromSymbol(String symbol, Color color) {
