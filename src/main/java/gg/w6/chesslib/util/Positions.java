@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Positions {
 
@@ -88,5 +89,24 @@ public class Positions {
             }
         }
         return visionList;
+    }
+
+    public static @NotNull List<Coordinate> getTargetingCoordinates(final Coordinate targetCoordinate, final Position position) {
+        for (final Square candidateSquare : position) {
+
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public static boolean coordinateTargetsCoordinate (@NotNull final Coordinate targeterCoordinate,
+                                                       @NotNull final Coordinate targetedCoordinate) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static boolean isCheckmate(Position position) {
+        return !MoveGenerator.oneOrMoreLegalMoves(position) && isKingToMoveInCheck(position);
+    }
+    public static boolean isStalemate(Position position) {
+        return !MoveGenerator.oneOrMoreLegalMoves(position) && !isKingToMoveInCheck(position);
     }
 }

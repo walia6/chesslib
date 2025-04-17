@@ -214,6 +214,36 @@ public final class MoveGenerator {
         return moves;
     }
 
+    public static boolean oneOrMoreLegalMoves(final Position position) {
+        int legalMoves = 0;
+        for (final Move move : generatePseudoLegalMoves(position)) {
+            final Position newPosition = position.applyTo(move);
+            // find the notToMoveKing
+            Coordinate notToMoveKingCoordinate = null;
+            final Color toMove = newPosition.getToMove();
+            final Color notToMove = toMove == Color.WHITE ? Color.BLACK : Color.WHITE;
+            outerloop:
+            for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
+                for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
+                    final Coordinate candidateCoordinate = Coordinate.valueOf(fileIndex, rankIndex);
+                    final Piece candidate = newPosition.getSquare(candidateCoordinate).getPiece();
+                    if (candidate instanceof final King king && king.getColor() == notToMove) {
+                        notToMoveKingCoordinate = candidateCoordinate;
+                        break outerloop;
+                    }
+                }
+            }
+            if (notToMoveKingCoordinate == null) {
+                continue;
+            }
+            if (!PositionValidator.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private MoveGenerator() {
     } // ensure non-instantiability
 }

@@ -1,6 +1,7 @@
 package gg.w6.chesslib.model.piece;
 
 import gg.w6.chesslib.model.Color;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a chess piece.
@@ -29,6 +30,7 @@ public abstract class Piece {
      *
      * @return The color of the piece (either WHITE or BLACK).
      */
+    @NotNull
     public Color getColor() {
         return color;
     }

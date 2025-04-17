@@ -2,7 +2,8 @@ package gg.w6.chesslib.model;
 
 import gg.w6.chesslib.model.piece.King;
 import gg.w6.chesslib.model.piece.Piece;
-import gg.w6.chesslib.util.*;
+import gg.w6.chesslib.util.FenParser;
+import gg.w6.chesslib.util.Moves;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,46 +18,29 @@ public class Position implements Iterable<Square> {
 
 
     /**
-     * Creates a {@code Position} object from a FEN string.
-     * 
-     * @param fen the FEN string representing the position
-     * @return a Position object representing the position
-     * @throws IllegalArgumentException if the FEN string is malformed
-     */
-    public static Position valueOf(final String fen) {
-        return FenParser.parse(fen);
-    }
-
-
-    /** 
      * The squares of the chessboard, represented as an 8x8 array.
      * Each square can contain a piece or be empty.
      */
     private final Square[][] squares;
-
     /**
      * The castling rights of the position, indicating which players can
      * castle kingside or queenside.
      */
     private final CastlingRights castlingRights;
-
     /**
      * The target square for en passant captures, or null if there is no
      * en passant target.
      */
     private final Coordinate enPassantTarget;
-
     /**
      * The color of the player who is to move next.
      */
     private final Color toMove;
-
     /**
      * The halfmove clock, which counts the number of halfmoves since the
      * last pawn move or capture.
      */
     private final int halfMoveClock;
-
     /**
      * The fullmove number, which counts the number of full moves in the
      * game.
@@ -67,7 +51,7 @@ public class Position implements Iterable<Square> {
      * Constructs a {@code Position} object with the specified castling rights,
      * en passant target square, active color, halfmove clock, and fullmove
      * number.
-     * 
+     *
      * @param castlingRights   the castling rights of the position
      * @param enPassantTargets the target square for en passant captures
      * @param toMove           the color of the player who is to move next
@@ -76,8 +60,8 @@ public class Position implements Iterable<Square> {
      */
     @ApiStatus.Internal
     public Position(final Square[][] squares, final CastlingRights castlingRights,
-            final Coordinate enPassantTargets, final Color toMove,
-            final int halfMoveClock, final int fullMoves) {
+                    final Coordinate enPassantTargets, final Color toMove,
+                    final int halfMoveClock, final int fullMoves) {
 
         this.squares = squares;
         this.castlingRights = castlingRights;
@@ -88,8 +72,19 @@ public class Position implements Iterable<Square> {
     }
 
     /**
+     * Creates a {@code Position} object from a FEN string.
+     *
+     * @param fen the FEN string representing the position
+     * @return a Position object representing the position
+     * @throws IllegalArgumentException if the FEN string is malformed
+     */
+    public static Position valueOf(final String fen) {
+        return FenParser.parse(fen);
+    }
+
+    /**
      * Returns the square at the specified file and rank.
-     * 
+     *
      * @param file the file of the square
      * @param rank the rank of the square
      * @return the square at the specified file and rank
@@ -100,9 +95,9 @@ public class Position implements Iterable<Square> {
 
     /**
      * Returns the square at the specified file and rank.
-     * 
-     * @param fileIndex  the index of the file
-     * @param rankIndex  the index of the rank
+     *
+     * @param fileIndex the index of the file
+     * @param rankIndex the index of the rank
      * @return the square at the specified file and rank
      */
     public Square getSquare(final int fileIndex, final int rankIndex) {
@@ -111,7 +106,7 @@ public class Position implements Iterable<Square> {
 
     /**
      * Returns the square at the specified coordinate.
-     * 
+     *
      * @param coordinate the coordinate of the square
      * @return the square at the specified coordinate
      */
@@ -127,7 +122,7 @@ public class Position implements Iterable<Square> {
 
     /**
      * Returns the castling rights of the position.
-     * 
+     *
      * @return the castling rights of the position
      */
     public CastlingRights getCastlingRights() {
@@ -136,7 +131,7 @@ public class Position implements Iterable<Square> {
 
     /**
      * Returns the target square for en passant captures.
-     * 
+     *
      * @return the target square for en passant captures
      */
     public Coordinate getEnPassantTarget() {
@@ -145,7 +140,7 @@ public class Position implements Iterable<Square> {
 
     /**
      * Returns the color of the player who is to move next.
-     * 
+     *
      * @return the color of the player who is to move next
      */
     public Color getToMove() {
@@ -155,18 +150,18 @@ public class Position implements Iterable<Square> {
     /**
      * Returns the fullmove number, which counts the number of full moves
      * in the game.
-     * 
+     *
      * @return the fullmove number
      */
     public int getFullMoves() {
         return fullMoves;
-        
+
     }
 
     /**
      * Returns the halfmove clock, which counts the number of halfmoves
      * since the last pawn move or capture.
-     * 
+     *
      * @return the halfmove clock
      */
     public int getHalfMoveClock() {
@@ -177,14 +172,14 @@ public class Position implements Iterable<Square> {
      * Generates the FEN (Forsyth-Edwards Notation) string representing the current board state.
      *
      * <p>FEN is a standard notation for describing a particular position of a chess game.
-     * It is widely used in chess engines, databases, and communication protocols for 
-     * encoding board states in a single-line format. FEN strings contain six fields separated 
+     * It is widely used in chess engines, databases, and communication protocols for
+     * encoding board states in a single-line format. FEN strings contain six fields separated
      * by spaces:</p>
      *
      * <ol>
      *   <li><b>Piece placement</b>: Describes the position of each piece on the board,
-     *       starting from the 8th rank to the 1st rank. Empty squares are represented 
-     *       by digits 1–8 (number of empty squares), and pieces are represented by 
+     *       starting from the 8th rank to the 1st rank. Empty squares are represented
+     *       by digits 1–8 (number of empty squares), and pieces are represented by
      *       letters ('P', 'N', 'B', 'R', 'Q', 'K' for white; lowercase for black).</li>
      *   <li><b>Active color</b>: Indicates which player is to move next, 'w' for white, 'b' for black.</li>
      *   <li><b>Castling availability</b>: Letters 'KQkq' for white/black kingside/queenside castling rights,
@@ -199,7 +194,7 @@ public class Position implements Iterable<Square> {
      * rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
      * </pre>
      *
-     * <p>For more details, see: 
+     * <p>For more details, see:
      * <a href="https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation">FEN on Wikipedia</a></p>
      *
      * @return A string in FEN format representing the current state of the chess position.
@@ -269,7 +264,7 @@ public class Position implements Iterable<Square> {
 
         // go thru each rank
         for (int reverseRankIndex = 0; reverseRankIndex < Rank.COUNT;
-                reverseRankIndex++) {
+             reverseRankIndex++) {
             int emptySquaresInARow = 0;
             for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
 
@@ -332,7 +327,7 @@ public class Position implements Iterable<Square> {
 
         final MoveType moveType = move.getMoveType();
         final Piece movedPiece = squares[fromFileIndex][fromRankIndex].getPiece();
-        
+
         switch (move.getMoveType()) {
             case NORMAL -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
@@ -343,7 +338,7 @@ public class Position implements Iterable<Square> {
                 newSquares[toFileIndex][toRankIndex] = Square.valueOf(toFileIndex, toRankIndex, movedPiece);
 
                 int rookFromFile, rookToFile;
-            
+
                 if (toFileIndex == 6) { // kingside (e.g., e1 to g1 or e8 to g8)
                     rookFromFile = 7;
                     rookToFile = 5;
@@ -353,15 +348,15 @@ public class Position implements Iterable<Square> {
                 } else {
                     throw new IllegalArgumentException("Invalid king destination for castling: file " + toFileIndex);
                 }
-            
+
                 newSquares[rookFromFile][toRankIndex] = Square.valueOf(rookFromFile, toRankIndex, null);
                 newSquares[rookToFile][toRankIndex] = Square.valueOf(rookToFile, toRankIndex, this.squares[rookFromFile][toRankIndex].getPiece());
-            
+
                 if (toRankIndex != 0 && toRankIndex != 7) {
                     throw new IllegalArgumentException("Trying to castle to a rank that is not the first or the eighth.");
                 }
             }
-            
+
             case EN_PASSANT -> {
                 newSquares[fromFileIndex][fromRankIndex] = Square.valueOf(fromFileIndex, fromRankIndex, null);
                 newSquares[toFileIndex][fromRankIndex] = Square.valueOf(toFileIndex, fromRankIndex, null);
@@ -383,42 +378,42 @@ public class Position implements Iterable<Square> {
         final boolean blackToMove = this.toMove == Color.BLACK;
 
         return new Position(
-            newSquares,
-            new CastlingRights(
-                this.castlingRights.whiteKingside()
-                && (moveTypeIsNormalOrPromotion
-                    && !(fromFileIndex == 7 && fromRankIndex == 0)
-                    && !(toFileIndex == 7 && toRankIndex == 0)
-                    && didWhiteKingNotMove
-                || moveTypeIsCastling && blackToMove || moveTypeIsEnPassant),
-                this.castlingRights.whiteQueenside()
-                && (moveTypeIsNormalOrPromotion
-                    && !(fromFileIndex == 0 && fromRankIndex == 0)
-                    && !(toFileIndex == 0 && toRankIndex == 0)
-                    && didWhiteKingNotMove
-                || moveTypeIsCastling && blackToMove || moveTypeIsEnPassant),
-                this.castlingRights.blackKingside()
-                && (moveTypeIsNormalOrPromotion
-                    && !(fromFileIndex == 7 && fromRankIndex == 7)
-                    && !(toFileIndex == 7 && toRankIndex == 7)
-                    && didBlackKingNotMove
-                || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant),
-                this.castlingRights.blackQueenside()
-                && (moveTypeIsNormalOrPromotion
-                    && !(fromFileIndex == 0 && fromRankIndex == 7)
-                    && !(toFileIndex == 0 && toRankIndex == 7)
-                    && didBlackKingNotMove
-                || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant)),
-            Moves.getEnPassantTarget(move, this),
-            this.toMove == Color.WHITE
-                ? Color.BLACK
-                : Color.WHITE,
-            Moves.isPawnMove(move, this) || Moves.isCapture(move, this)
-                ? 0
-                : this.halfMoveClock + 1,
-            this.toMove == Color.BLACK
-                ? this.fullMoves + 1
-                : this.fullMoves);
+                newSquares,
+                new CastlingRights(
+                        this.castlingRights.whiteKingside()
+                                && (moveTypeIsNormalOrPromotion
+                                && !(fromFileIndex == 7 && fromRankIndex == 0)
+                                && !(toFileIndex == 7 && toRankIndex == 0)
+                                && didWhiteKingNotMove
+                                || moveTypeIsCastling && blackToMove || moveTypeIsEnPassant),
+                        this.castlingRights.whiteQueenside()
+                                && (moveTypeIsNormalOrPromotion
+                                && !(fromFileIndex == 0 && fromRankIndex == 0)
+                                && !(toFileIndex == 0 && toRankIndex == 0)
+                                && didWhiteKingNotMove
+                                || moveTypeIsCastling && blackToMove || moveTypeIsEnPassant),
+                        this.castlingRights.blackKingside()
+                                && (moveTypeIsNormalOrPromotion
+                                && !(fromFileIndex == 7 && fromRankIndex == 7)
+                                && !(toFileIndex == 7 && toRankIndex == 7)
+                                && didBlackKingNotMove
+                                || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant),
+                        this.castlingRights.blackQueenside()
+                                && (moveTypeIsNormalOrPromotion
+                                && !(fromFileIndex == 0 && fromRankIndex == 7)
+                                && !(toFileIndex == 0 && toRankIndex == 7)
+                                && didBlackKingNotMove
+                                || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant)),
+                Moves.getEnPassantTarget(move, this),
+                this.toMove == Color.WHITE
+                        ? Color.BLACK
+                        : Color.WHITE,
+                Moves.isPawnMove(move, this) || Moves.isCapture(move, this)
+                        ? 0
+                        : this.halfMoveClock + 1,
+                this.toMove == Color.BLACK
+                        ? this.fullMoves + 1
+                        : this.fullMoves);
     }
 
 

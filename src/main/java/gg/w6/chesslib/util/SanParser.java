@@ -17,7 +17,7 @@ public class SanParser {
     private static final Pattern PIECE_MOVE = Pattern.compile("^([NBRQK])([a-h]?[1-8]?)(x)?([a-h][1-8])$");
 
     public static Move parse(final String san, final Position position) {
-        final String cleanSan = san.replace("+", "").replace("#", "");
+        final String cleanSan = san.replace("+", "").replace("#", "").replace("!", "").replace("?", "");
 
         if (CASTLING_SHORT.matcher(cleanSan).matches()) {
             return parseCastling(position, true);
