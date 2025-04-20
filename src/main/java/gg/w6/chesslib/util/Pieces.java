@@ -15,7 +15,7 @@ public class Pieces {
 
     private Pieces() {} // ensure non-instantiability
 
-    public static final Map<Color, Set<Piece>> promotionCandidates;
+    public static final Map<Color, Set<Piece>> PROMOTION_CANDIDATES;
 
     static {
 
@@ -49,7 +49,7 @@ public class Pieces {
             }
         }
 
-        promotionCandidates = Map.ofEntries(
+        PROMOTION_CANDIDATES = Map.ofEntries(
             Map.entry(Color.WHITE, Set.copyOf(whitePromotionPieces)),
             Map.entry(Color.BLACK, Set.copyOf(blackPromotionPieces)));
     }

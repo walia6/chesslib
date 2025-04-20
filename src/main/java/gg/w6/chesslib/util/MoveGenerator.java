@@ -122,7 +122,7 @@ public final class MoveGenerator {
             final Coordinate from, final Coordinate to) {
     
         if (to.getRank() == (pawnColor == Color.WHITE ? Rank.EIGHT : Rank.ONE)) {
-            for (final Piece promotionPiece : Pieces.promotionCandidates.get(pawnColor)) {
+            for (final Piece promotionPiece : Pieces.PROMOTION_CANDIDATES.get(pawnColor)) {
                 moves.add(new Move(from, to, MoveType.PROMOTION, promotionPiece));
             }
         } else {

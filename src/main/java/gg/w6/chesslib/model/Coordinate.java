@@ -1,5 +1,6 @@
 package gg.w6.chesslib.model;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 
 /**
@@ -12,14 +13,13 @@ import java.util.Arrays;
  * Coordinate coordinate = Coordinate.valueOf("e4");
  * }</pre>
  */
+@Immutable
 public class Coordinate {
     
     /**
      * A cache of all possible coordinates on the chessboard.
      */
     private static final Coordinate[] coordinates = new Coordinate[Rank.COUNT * File.COUNT];
-
-
 
     /**
      * Creates a new Coordinate object with the specified file and rank.
@@ -141,11 +141,29 @@ public class Coordinate {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof final Coordinate otherCoordinate
-                && file == otherCoordinate.file && rank == otherCoordinate.rank;
+        return
+                obj instanceof final Coordinate otherCoordinate
+                && file == otherCoordinate.file
+                && rank == otherCoordinate.rank;
     }
 
+    /**
+     * Determine if this <code>Coordinate</code> corresponds to the
+     * <code>coordinateString</code>.
+     *
+     * <p>For example, if <code>Coordinate coordinate = Coordinate.valueOf(File.B, Rank.SEVEN);</code>,</p>
+     * <p>then <code>coordinate.is("b7");</code> is <code>true</code>.</p>
+     *
+     * <p><code>coordinateString</code> is <i>not</i> case-sensitive.</p>
+     *
+     * <p>This is equivalent to</p>
+     * <p><code>this.equals(valueOf(coordinateString.toLowerCase()));</code></p>
+     *
+     * @param coordinateString a <code>String</code> representing a
+     *                         coordinate
+     * @return <code>true</code> if equivalent
+     */
     public boolean is(final String coordinateString) {
-        return this.equals(valueOf(coordinateString));
+        return this.equals(valueOf(coordinateString.toLowerCase()));
     }
 }

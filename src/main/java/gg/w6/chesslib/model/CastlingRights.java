@@ -99,12 +99,13 @@ public class CastlingRights {
     /**
      * Determine there are no castling rights.
      *
-     * <p>Semantically equivalent to: <pre><code>
+     * <p>Semantically equivalent to:</p>
+     * <pre><code>
      *     whiteKingside()
-     *     && whiteQueenside()
-     *     && blackKingside()
-     *     && blackQueenside()
-     * </code></pre></p>
+     *     &amp;&amp; whiteQueenside()
+     *     &amp;&amp; blackKingside()
+     *     &amp;&amp; blackQueenside()
+     * </code></pre>
      * @return <code>true</code> if there are no castling rights.
      */
     public boolean allRightFalse() {

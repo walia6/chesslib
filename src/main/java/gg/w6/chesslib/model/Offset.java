@@ -1,5 +1,8 @@
 package gg.w6.chesslib.model;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,10 +12,6 @@ import java.util.List;
  *
  * <p>Offsets are used to define the movement of pieces in different directions.</p>
  *
- * <p>Example usage:</p>
- * <pre>{@code
- * Offset offset = Offset.valueOf(1, 2);
- * }</pre>
  */
 public class Offset {
 
@@ -44,6 +43,7 @@ public class Offset {
      * @param ranks The number of ranks (vertical movement).
      * @return Cached Offset instance or new one if out of bounds.
      */
+    @NotNull
     public static Offset valueOf(final int files, final int ranks) {
         try {
             return CACHE[files - MIN][ranks - MIN];
@@ -70,8 +70,16 @@ public class Offset {
         this.ranks = ranks;
     }
 
+    /**
+     * The number of files of this offset.
+     * @return the number of files of this offset.
+     */
     public int getFiles() { return files; }
 
+    /**
+     * The number of ranks of this offset.
+     * @return the number of ranks of this offset.
+     */
     public int getRanks() { return ranks; }
 
     /**
@@ -82,6 +90,7 @@ public class Offset {
      * @param range  The maximum number of steps.
      * @return Iterable of coordinates.
      */
+    @NotNull
     public Iterable<Coordinate> extendFrom(final Coordinate origin, final int range) {
         return () -> new Iterator<>() {
             private int steps = 1;
@@ -107,12 +116,14 @@ public class Offset {
     }
 
     /**
-     * Eagerly computes the extension list (pre-existing behavior).
+     * Eagerly computes the extension list. Does not include coordinates out of
+     * bounds.
      *
      * @param origin The origin coordinate.
      * @param range  The maximum number of steps.
      * @return List of coordinates.
      */
+    @NotNull
     public List<Coordinate> computeExtension(final Coordinate origin, final int range) {
         final List<Coordinate> coordinates = new LinkedList<>();
         for (int steps = 1; steps <= range; steps++) {
@@ -129,6 +140,7 @@ public class Offset {
      * @param origin The origin coordinate.
      * @return New coordinate or null if out of bounds.
      */
+    @Nullable
     public Coordinate applyTo(final Coordinate origin) {
         final int newFileIndex = origin.getFile().ordinal() + files;
         final int newRankIndex = origin.getRank().ordinal() + ranks;
@@ -147,6 +159,7 @@ public class Offset {
      * @param factor The scaling factor.
      * @return New scaled Offset instance.
      */
+    @NotNull
     public Offset scale(final int factor) {
         return valueOf(files * factor, ranks * factor);
     }

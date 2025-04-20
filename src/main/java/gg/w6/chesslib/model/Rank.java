@@ -1,14 +1,12 @@
 package gg.w6.chesslib.model;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents the ranks on a chessboard.
  *
  * <p>Ranks are the horizontal rows on a chessboard, numbered from 1 to 8.</p>
  *
- * <p>Example usage:</p>
- * <pre>{@code
- * Rank rank = Rank.ONE;
- * }</pre>
  */
 public enum Rank {
     /**
@@ -62,6 +60,7 @@ public enum Rank {
      * @return The character representation of the rank.
      */
     @Override
+    @NotNull
     public String toString() {
         return String.valueOf(this.ordinal() + 1);
     }

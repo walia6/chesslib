@@ -1,16 +1,17 @@
 package gg.w6.chesslib.model;
 
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Represents the files on a chessboard.
  *
  * <p>Files are the vertical columns on a chessboard, labeled from 'a' to 'h'.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * File file = File.A;
- * }</pre>
  */
+@Immutable
 public enum File {
+
     /**
      * Represents the 'a' file.
      */
@@ -60,6 +61,7 @@ public enum File {
      * Returns the character representation of the file.
      */
     @Override
+    @NotNull
     public String toString() {
         return this.name().toLowerCase();
     }
