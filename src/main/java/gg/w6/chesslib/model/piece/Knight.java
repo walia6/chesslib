@@ -3,6 +3,9 @@ package gg.w6.chesslib.model.piece;
 import gg.w6.chesslib.model.Color;
 import gg.w6.chesslib.model.Offset;
 import gg.w6.chesslib.model.PromotionCandidate;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents a Knight piece in chess.
@@ -10,12 +13,10 @@ import gg.w6.chesslib.model.PromotionCandidate;
  * <p>The Knight moves in an "L" shape: two squares in one direction and then one square perpendicular,
  * or one square in one direction and then two squares perpendicular.</p>
  *
- * <p>Example usage:</p>
- * <pre>{@code
- * Knight knight = new Knight(Color.WHITE);
- * Offset[] offsets = knight.getOffsets(); // returns the movement offsets for the Knight
- * }</pre>
+ * <p>Notably, this class extends <code>Rider</code>.</p>
+ * <p>See {@link Rider}.</p>
  */
+@Immutable
 @PromotionCandidate
 public class Knight extends Rider {
 
@@ -34,7 +35,7 @@ public class Knight extends Rider {
      *
      * @param color The color of the Knight (either WHITE or BLACK).
      */
-    public Knight(final Color color) {
+    public Knight(@NotNull final Color color) {
         super(color);
     }
 

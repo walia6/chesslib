@@ -3,18 +3,16 @@ package gg.w6.chesslib.model.piece;
 import gg.w6.chesslib.model.Color;
 import gg.w6.chesslib.model.Offset;
 import gg.w6.chesslib.model.PromotionCandidate;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents a Queen piece in chess.
  *
  * <p>The Queen can move any number of squares in any direction: horizontally, vertically, or diagonally.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * Queen queen = new Queen(Color.WHITE);
- * Offset[] offsets = queen.getOffsets(); // returns the movement offsets for the Queen
- * }</pre>
  */
+@Immutable
 @PromotionCandidate
 public class Queen extends Rider {
 
@@ -33,11 +31,12 @@ public class Queen extends Rider {
      *
      * @param color The color of the Queen (either WHITE or BLACK).
      */
-    public Queen(Color color) {
+    public Queen(@NotNull final Color color) {
         super(color);
     }
 
     @Override
+    @NotNull
     public Offset[] getOffsets() {
         return OFFSETS;
     }

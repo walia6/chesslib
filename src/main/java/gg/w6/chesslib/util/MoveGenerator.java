@@ -206,7 +206,7 @@ public final class MoveGenerator {
             if (notToMoveKingCoordinate == null) {
                 continue;
             }
-            if (!PositionValidator.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
+            if (!Positions.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
                 moves.add(move);
             }
         }

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Positions {
 
@@ -50,7 +51,7 @@ public class Positions {
                     if (fileIndex != 0) {
                         if (!position.getSquare(fileIndex - 1, rankIndex + direction).isEmpty()
                                 && position.getSquare(fileIndex - 1, rankIndex + direction).getPiece() instanceof King
-                                && position.getSquare(fileIndex - 1, rankIndex + direction).getPiece()
+                                && Objects.requireNonNull(position.getSquare(fileIndex - 1, rankIndex + direction).getPiece())
                                         .getColor() == position.getToMove()) {
                             return true;
                         }
@@ -59,7 +60,7 @@ public class Positions {
                     if (fileIndex != File.COUNT - 1) {
                         if (!position.getSquare(fileIndex + 1, rankIndex + direction).isEmpty()
                                 && position.getSquare(fileIndex + 1, rankIndex + direction).getPiece() instanceof King
-                                && position.getSquare(fileIndex + 1, rankIndex + direction).getPiece()
+                                && Objects.requireNonNull(position.getSquare(fileIndex + 1, rankIndex + direction).getPiece())
                                         .getColor() == position.getToMove()) {
                             return true;
                         }
@@ -88,5 +89,38 @@ public class Positions {
             }
         }
         return visionList;
+    }
+
+    public static boolean isTargetedByColor(final Coordinate target, final Color targeterColor, final Position position) {
+        for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
+            for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
+                final Coordinate origin = Coordinate.valueOf(fileIndex, rankIndex);
+                final Piece piece = position.getSquare(origin).getPiece();
+
+                if (piece == null || piece.getColor() != targeterColor) {
+                    continue;
+                }
+
+                if (piece instanceof final Rider rider) {
+                    for (final Offset offset : rider.getOffsets()) {
+                        for (final Coordinate candidate : offset.extendFrom(origin, rider.getRange())) {
+                            if (candidate.equals(target)) {
+                                return true;
+                            } else if(position.getSquare(candidate).getPiece() != null) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // piece must be a pawn
+
+                    final int direction = targeterColor == Color.WHITE ? 1 : -1;
+                    if (origin.getRankIndex() + direction == target.getRankIndex() && Math.abs(origin.getFileIndex() - target.getFileIndex()) == 1) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

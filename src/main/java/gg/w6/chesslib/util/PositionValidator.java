@@ -127,6 +127,7 @@ public class PositionValidator {
             if (square.equals(notToMoveKingSquare)) continue;
 
             final Piece piece = square.getPiece();
+            assert piece != null;
             final Color pieceColor = piece.getColor();
 
             if (pieceColor != position.getToMove() && !(piece instanceof Pawn))
@@ -169,36 +170,4 @@ public class PositionValidator {
         return Legality.LEGAL;
     }
 
-    public static boolean isTargetedByColor(final Coordinate target, final Color targeterColor, final Position position) {
-        for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
-            for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
-                final Coordinate origin = Coordinate.valueOf(fileIndex, rankIndex);
-                final Piece piece = position.getSquare(origin).getPiece();
-
-                if (piece == null || piece.getColor() != targeterColor) {
-                    continue;
-                }
-
-                if (piece instanceof final Rider rider) {
-                    for (final Offset offset : rider.getOffsets()) {
-                        for (final Coordinate candidate : offset.extendFrom(origin, rider.getRange())) {
-                            if (candidate.equals(target)) {
-                                return true;
-                            } else if(position.getSquare(candidate).getPiece() != null) {
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    // piece must be a pawn
-                    
-                    final int direction = targeterColor == Color.WHITE ? 1 : -1;
-                    if (origin.getRankIndex() + direction == target.getRankIndex() && Math.abs(origin.getFileIndex() - target.getFileIndex()) == 1) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 }

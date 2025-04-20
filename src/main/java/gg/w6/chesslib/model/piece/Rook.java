@@ -3,18 +3,16 @@ package gg.w6.chesslib.model.piece;
 import gg.w6.chesslib.model.Color;
 import gg.w6.chesslib.model.Offset;
 import gg.w6.chesslib.model.PromotionCandidate;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents a Rook piece in chess.
  *
  * <p>The Rook moves horizontally or vertically any number of squares.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * Rook rook = new Rook(Color.WHITE);
- * Offset[] offsets = rook.getOffsets(); // returns the movement offsets for the Rook
- * }</pre>
  */
+@Immutable
 @PromotionCandidate
 public class Rook extends Rider {
 
@@ -26,11 +24,17 @@ public class Rook extends Rider {
     
     private static final int RANGE = Integer.MAX_VALUE;
 
-    public Rook(Color color) {
+    /**
+     * Constructs a new Rook with the specified color.
+     *
+     * @param color The color of the Rook (either WHITE or BLACK).
+     */
+    public Rook(@NotNull final Color color) {
         super(color);
     }
 
     @Override
+    @NotNull
     public Offset[] getOffsets() {
         return OFFSETS;
     }

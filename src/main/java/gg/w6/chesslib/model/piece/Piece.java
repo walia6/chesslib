@@ -1,18 +1,17 @@
 package gg.w6.chesslib.model.piece;
 
 import gg.w6.chesslib.model.Color;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents a chess piece.
  *
  * <p>This is an abstract class that serves as a base for all pieces.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * Piece piece = new Pawn(Color.WHITE);
- * char letter = piece.getLetter(); // returns 'P'
- * }</pre>
  */
+@Immutable
 public abstract class Piece {
 
     /**
@@ -20,7 +19,12 @@ public abstract class Piece {
      */
     private final Color color;
 
-    protected Piece(final Color color) {
+    /**
+     * Constructs a new Piece with the specified color.
+     *
+     * @param color The color of the Piece (either WHITE or BLACK).
+     */
+    protected Piece(@NotNull final Color color) {
         this.color = color;
     }
 
@@ -29,6 +33,7 @@ public abstract class Piece {
      *
      * @return The color of the piece (either WHITE or BLACK).
      */
+    @NotNull
     public Color getColor() {
         return color;
     }
@@ -59,6 +64,7 @@ public abstract class Piece {
      * @return The corresponding Piece object.
      * @throws IllegalArgumentException if the character does not represent a valid piece.
      */
+    @NotNull
     static public Piece valueOf(char c) {
         Color color = Character.toUpperCase(c) == c ? Color.WHITE : Color.BLACK;
 
@@ -75,14 +81,25 @@ public abstract class Piece {
 
     }
 
-
+    /**
+     * @return the simple name of the implementing class
+     */
     @Override
+    @NotNull
     public String toString() {
-        return getClass().getSimpleName();
+        return this.getClass().getSimpleName();
     }
 
+    /**
+     * Compares <code>this</code> and the current
+     * @param obj the object with which to compare against
+     * @return <code>true</code> if the object is of the same class and color.
+     */
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Piece && getClass().equals(obj.getClass()) && ((Piece) obj).getLetter() == getLetter();
+    public boolean equals(@Nullable Object obj) {
+        return
+                obj instanceof final Piece piece
+                && this.getClass().equals(obj.getClass())
+                && piece.getLetter() == getLetter();
     }
 }

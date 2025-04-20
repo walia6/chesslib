@@ -1,20 +1,20 @@
 package gg.w6.chesslib.model;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Represents the color of a chess piece.
  *
  * <p>Chess pieces can be either white or black.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * Color color = Color.WHITE;
- * }</pre>
  */
+@Immutable
 public enum Color {
+
     /**
      * Represents the white color.
      */
     WHITE,
+
     /**
      * Represents the black color.
      */
