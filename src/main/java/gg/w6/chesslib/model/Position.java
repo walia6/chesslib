@@ -339,6 +339,28 @@ public class Position implements Iterable<Square> {
                 [Rank.COUNT - 1].toString());
     }
 
+    /**
+     * Applies the given move to this position and returns a new {@code Position}
+     * representing the resulting board state.
+     *
+     * <p>This method handles all legal move types, including:</p>
+     * <ul>
+     *   <li>{@link MoveType#NORMAL} – A standard move from one square to another.</li>
+     *   <li>{@link MoveType#CASTLING} – Kingside or queenside castling, including rook movement.</li>
+     *   <li>{@link MoveType#EN_PASSANT} – En passant capture of a pawn.</li>
+     *   <li>{@link MoveType#PROMOTION} – Promotion of a pawn to another piece.</li>
+     * </ul>
+     *
+     * <p>Castling rights and en passant targets are updated accordingly. The halfmove
+     * clock is reset if the move is a capture or a pawn move. The fullmove number is
+     * incremented after a move by Black.</p>
+     *
+     * <p>If there is a Pawn double push, the En Passant Target square is set regardless of the legality of an En Passant</p>
+     *
+     * @param move the move to apply
+     * @return a new {@code Position} reflecting the state of the board after applying the move
+     * @throws IllegalArgumentException if castling is attempted with an invalid king destination
+     */
     public Position applyTo(final Move move) {
 
         final Square[][] newSquares = this.squares.clone();

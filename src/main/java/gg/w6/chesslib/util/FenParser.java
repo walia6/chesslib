@@ -25,7 +25,7 @@ public final class FenParser {
     /**
      * Generate a {@link Position} from a given FEN string.
      *
-     * @see <a href="https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation">
+     * @see <a href="https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation">
      *     Forsyth–Edwards Notation - Wikipedia</a>
      *
      * @param fen a string containing the Forsyth–Edwards Notation (FEN)
