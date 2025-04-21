@@ -145,12 +145,9 @@ public class Offset {
         final int newFileIndex = origin.getFile().ordinal() + files;
         final int newRankIndex = origin.getRank().ordinal() + ranks;
 
-        return newFileIndex > File.COUNT - 1
-                || newRankIndex > Rank.COUNT - 1
-                || newFileIndex < 0
-                || newRankIndex < 0
-                ? null
-                : Coordinate.valueOf(newFileIndex, newRankIndex);
+        return newFileIndex > File.COUNT - 1 || newRankIndex > Rank.COUNT - 1
+                || newFileIndex < 0 || newRankIndex < 0
+                    ? null : Coordinate.valueOf(newFileIndex, newRankIndex);
     }
 
     /**

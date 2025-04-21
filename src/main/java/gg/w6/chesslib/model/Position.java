@@ -22,6 +22,7 @@ public class Position implements Iterable<Square> {
     /**
      * Creates a {@code Position} object from a FEN string.
      * 
+     * <p>This method is equivalent to {@link FenParser#parse(String)}</p>
      * @param fen the FEN string representing the position
      * @return a Position object representing the position
      * @throws IllegalArgumentException if the FEN string is malformed
@@ -430,7 +431,7 @@ public class Position implements Iterable<Square> {
                     && !(toFileIndex == 0 && toRankIndex == 7)
                     && didBlackKingNotMove
                 || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant)),
-            Moves.getEnPassantTarget(move, this),
+            Positions.getEnPassantTarget(this, move),
             this.toMove == Color.WHITE
                 ? Color.BLACK
                 : Color.WHITE,

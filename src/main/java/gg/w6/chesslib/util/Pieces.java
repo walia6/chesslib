@@ -11,10 +11,33 @@ import org.reflections.Reflections;
 
 import gg.w6.chesslib.model.piece.Piece;
 
+/**
+ * This class consists of a single static member, {@link #PROMOTION_CANDIDATES}.
+ */
 public class Pieces {
 
     private Pieces() {} // ensure non-instantiability
 
+    /**
+     * This is a mapping of the {@link Color}s to {@link Piece}s.
+     *
+     * <p>All pieces that may be promoted to are values of this map.</p>
+     *
+     * <p>This field is created statically at runtime by finding all classes of
+     * {@link gg.w6.chesslib.model.piece} that are annotated with
+     * {@link PromotionCandidate}.</p>
+     *
+     * <p>This field is immutable.</p>
+     *
+     * <p>Usage example:</p>
+     * <pre><code>
+     *     if (to.getRank() == (pawnColor == Color.WHITE ? Rank.EIGHT : Rank.ONE)) {
+     *         for (final Piece promotionPiece : Pieces.PROMOTION_CANDIDATES.get(pawnColor)) {
+     *             moves.add(new Move(from, to, MoveType.PROMOTION, promotionPiece));
+     *         }
+     *     }
+     * </code></pre>
+     */
     public static final Map<Color, Set<Piece>> PROMOTION_CANDIDATES;
 
     static {

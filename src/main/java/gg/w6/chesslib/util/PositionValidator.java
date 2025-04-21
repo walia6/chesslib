@@ -48,6 +48,10 @@ public class PositionValidator {
     // Ensure non-instantiability
     private PositionValidator() {}
 
+    /**
+     * An enum representing the various outcomes of a legality test of a
+     * {@link Position}
+     */
     public enum Legality {
         LEGAL,
         MISSING_KING,
