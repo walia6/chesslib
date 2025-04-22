@@ -5,7 +5,9 @@ import gg.w6.chesslib.model.piece.Piece;
 import gg.w6.chesslib.util.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
@@ -13,20 +15,22 @@ import java.util.Iterator;
  * board, castling rights, active color, en passant target square, halfmove
  * clock, and fullmove number.
  */
+@Immutable
 public class Position implements Iterable<Square> {
 
 
     /**
      * Creates a {@code Position} object from a FEN string.
      * 
+     * <p>This method is equivalent to {@link FenParser#parse(String)}</p>
      * @param fen the FEN string representing the position
      * @return a Position object representing the position
      * @throws IllegalArgumentException if the FEN string is malformed
      */
-    public static Position valueOf(final String fen) {
+    @NotNull
+    public static Position valueOf(@NotNull final String fen) {
         return FenParser.parse(fen);
     }
-
 
     /** 
      * The squares of the chessboard, represented as an 8x8 array.
@@ -67,18 +71,26 @@ public class Position implements Iterable<Square> {
      * Constructs a {@code Position} object with the specified castling rights,
      * en passant target square, active color, halfmove clock, and fullmove
      * number.
-     * 
+     *
+     * <p>This method should <b>NOT</b> be used. Rather,
+     * {@link #valueOf(String)} or {@link PositionBuilder} ought to be used.</p>
+     *
+     * @param squares          a <b>file index major</b> 2D array of
+     *                         <code>Square</code> objects.
      * @param castlingRights   the castling rights of the position
-     * @param enPassantTargets the target square for en passant captures
+     * @param enPassantTargets the target square for en passant captures, null
+     *                         if there is no en passant target square
      * @param toMove           the color of the player who is to move next
      * @param halfMoveClock    the halfmove clock
      * @param fullMoves        the fullmove number
      */
     @ApiStatus.Internal
-    public Position(final Square[][] squares, final CastlingRights castlingRights,
-            final Coordinate enPassantTargets, final Color toMove,
-            final int halfMoveClock, final int fullMoves) {
-
+    public Position(final @NotNull Square[][] squares,
+                    @NotNull final CastlingRights castlingRights,
+                    @Nullable final Coordinate enPassantTargets,
+                    @NotNull final Color toMove,
+                    final int halfMoveClock,
+                    final int fullMoves) {
         this.squares = squares;
         this.castlingRights = castlingRights;
         this.enPassantTarget = enPassantTargets;
@@ -94,7 +106,9 @@ public class Position implements Iterable<Square> {
      * @param rank the rank of the square
      * @return the square at the specified file and rank
      */
-    public Square getSquare(final File file, final Rank rank) {
+    @NotNull
+    public Square getSquare(@NotNull final File file,
+                            @NotNull final Rank rank) {
         return squares[file.ordinal()][rank.ordinal()];
     }
 
@@ -104,7 +118,9 @@ public class Position implements Iterable<Square> {
      * @param fileIndex  the index of the file
      * @param rankIndex  the index of the rank
      * @return the square at the specified file and rank
+     * @throws ArrayIndexOutOfBoundsException if <code>fileIndex</code> or <code>rankIndex</code> are out of bounds
      */
+    @NotNull
     public Square getSquare(final int fileIndex, final int rankIndex) {
         return squares[fileIndex][rankIndex];
     }
@@ -115,12 +131,18 @@ public class Position implements Iterable<Square> {
      * @param coordinate the coordinate of the square
      * @return the square at the specified coordinate
      */
-    public Square getSquare(final Coordinate coordinate) {
+    @NotNull
+    public Square getSquare(@NotNull final Coordinate coordinate) {
         return squares
                 [coordinate.getFile().ordinal()]
                 [coordinate.getRank().ordinal()];
     }
 
+    /**
+     * get the square at the given coordinate
+     * @param coordinate a coordinate, as a {@link String}
+     * @return the square at the given coordinate
+     */
     public Square getSquare(final String coordinate) {
         return getSquare(Coordinate.valueOf(coordinate));
     }
@@ -317,6 +339,28 @@ public class Position implements Iterable<Square> {
                 [Rank.COUNT - 1].toString());
     }
 
+    /**
+     * Applies the given move to this position and returns a new {@code Position}
+     * representing the resulting board state.
+     *
+     * <p>This method handles all legal move types, including:</p>
+     * <ul>
+     *   <li>{@link MoveType#NORMAL} – A standard move from one square to another.</li>
+     *   <li>{@link MoveType#CASTLING} – Kingside or queenside castling, including rook movement.</li>
+     *   <li>{@link MoveType#EN_PASSANT} – En passant capture of a pawn.</li>
+     *   <li>{@link MoveType#PROMOTION} – Promotion of a pawn to another piece.</li>
+     * </ul>
+     *
+     * <p>Castling rights and en passant targets are updated accordingly. The halfmove
+     * clock is reset if the move is a capture or a pawn move. The fullmove number is
+     * incremented after a move by Black.</p>
+     *
+     * <p>If there is a Pawn double push, the En Passant Target square is set regardless of the legality of an En Passant</p>
+     *
+     * @param move the move to apply
+     * @return a new {@code Position} reflecting the state of the board after applying the move
+     * @throws IllegalArgumentException if castling is attempted with an invalid king destination
+     */
     public Position applyTo(final Move move) {
 
         final Square[][] newSquares = this.squares.clone();
@@ -409,7 +453,7 @@ public class Position implements Iterable<Square> {
                     && !(toFileIndex == 0 && toRankIndex == 7)
                     && didBlackKingNotMove
                 || moveTypeIsCastling && whiteToMove || moveTypeIsEnPassant)),
-            Moves.getEnPassantTarget(move, this),
+            Positions.getEnPassantTarget(this, move),
             this.toMove == Color.WHITE
                 ? Color.BLACK
                 : Color.WHITE,

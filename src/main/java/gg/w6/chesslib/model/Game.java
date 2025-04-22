@@ -1,8 +1,20 @@
 package gg.w6.chesslib.model;
 
+import gg.w6.chesslib.util.PgnParser;
+import gg.w6.chesslib.util.SanParser;
+
 import java.util.List;
 
 /**
+ * A record representing a game of chess. This is meant to be created with
+ * {@link PgnParser#parse(String)}.
+ *
+ * <p>All fields of this class are a <code>String</code>, with the sole
+ * exception of <code>sanStrings</code>, which is a
+ * <code>List&lt;String&gt;</code>.</p>
+ * 
+ * <p>To parse sanStrings, one should use {@link SanParser#parse(String, Position)}.</p>
+ *
  * @param event       From [Event "..."]
  * @param site        [Site "..."]
  * @param date        [Date "..."]

@@ -1,6 +1,7 @@
 package gg.w6.chesslib.model;
 
 import gg.w6.chesslib.model.piece.Piece;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -13,16 +14,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Square objects are typically used as part of a 2D board array representing a full chess position,
  * and are responsible for maintaining the local state of piece placement.</p>
- *
- * <p>Note: Squares are immutable in their coordinates but mutable in their piece state. This design allows
- * for flexible manipulation of the board while preserving the location identity of each square.</p>
- *
- * <p>Examples:</p>
- * <pre>{@code
- * Square a1 = new Square(File.A, Rank.ONE);
- * Piece piece = a1.getPiece(); // may be null
- * Color squareColor = a1.getColor(); // returns Color.BLACK
- * }</pre>
  *
  * @see Piece
  * @see Coordinate
@@ -44,7 +35,7 @@ public class Square {
      *
      * @param coordinate The coordinate of the square.
      */
-    public Square(final Coordinate coordinate) {
+    public Square(@NotNull final  Coordinate coordinate) {
         this.piece = null;
         this.coordinate = coordinate;
     }
@@ -55,7 +46,7 @@ public class Square {
      * @param file The file of the square.
      * @param rank The rank of the square.
      */
-    public Square(final File file, final Rank rank) {
+    public Square(@NotNull final File file, @NotNull final Rank rank) {
         this.piece = null;
         this.coordinate = Coordinate.valueOf(file, rank);
     }
@@ -77,7 +68,7 @@ public class Square {
      * @param coordinate The coordinate of the square.
      * @param piece      The piece occupying the square, or null if empty.
      */
-    public Square(final Coordinate coordinate, final Piece piece) {
+    public Square(@NotNull final Coordinate coordinate, @Nullable final Piece piece) {
         this.piece = piece;
         this.coordinate = coordinate;
     }
@@ -89,8 +80,9 @@ public class Square {
      * @param piece the piece (may be null)
      * @return a Square of the given properties.
      */
+    @NotNull
     public static Square valueOf(final int fileIndex, final int squareIndex
-            , final Piece piece) {
+            , @Nullable final Piece piece) {
         return new Square(Coordinate.valueOf(fileIndex, squareIndex), piece);
     }
 
@@ -98,6 +90,7 @@ public class Square {
      * Returns the coordinate of this square.
      * @return The coordinate of the square.
      */
+    @NotNull
     public Coordinate getCoordinate() {
         return coordinate;
     }
@@ -111,6 +104,10 @@ public class Square {
         return piece;
     }
 
+    /**
+     * Checks if this square has a piece.
+     * @return <code>true</code> if this square has a piece
+     */
     public boolean isEmpty() {
         return this.piece == null;
     }

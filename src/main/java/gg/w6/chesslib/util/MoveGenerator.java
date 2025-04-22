@@ -5,28 +5,47 @@ import java.util.Set;
 
 import gg.w6.chesslib.model.*;
 import gg.w6.chesslib.model.piece.*;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class is a static utility class for generating and getting the legal
+ * moves of a position. It is not instantiable.
+ *
+ * <p>The only public member of this class is {@link #getLegalMoves(Position)}.</p>
+ */
 public final class MoveGenerator {
-    public static Set<Move> generatePseudoLegalMoves(final Position position) {
+    
+    /**
+     * Get the legal moves for the supplied {@link Position}.
+     * @param position the {@link Position} to find the legal moves for
+     * @return the set of legal {@link Move}s
+     */
+    @NotNull
+    public static Set<Move> getLegalMoves(@NotNull final Position position) {
+        // TODO: memoize
+        return MoveGenerator.generateLegalMoves(position);
+    }
+
+    private static Set<Move> generatePseudoLegalMoves(final Position position) {
         final Set<Move> moves = new HashSet<>();
         final CastlingRights castlingRights = position.getCastlingRights();
         final Color toMove = position.getToMove();
-    
+
         boolean canWhiteCastleKingside = castlingRights.whiteKingside();
         boolean canWhiteCastleQueenside = castlingRights.whiteQueenside();
         boolean canBlackCastleKingside = castlingRights.blackKingside();
         boolean canBlackCastleQueenside = castlingRights.blackQueenside();
-    
+
         for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
             for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
                 final Square square = position.getSquare(fileIndex, rankIndex);
                 final Piece piece = square.getPiece();
                 if (piece == null) continue;
-    
+
                 final Color pieceColor = piece.getColor();
                 final Coordinate origin = Coordinate.valueOf(fileIndex, rankIndex);
                 boolean castleCheck = false;
-    
+
                 if (pieceColor != toMove) {
                     if (piece instanceof Pawn
                             || toMove == Color.WHITE && !canWhiteCastleKingside && !canWhiteCastleQueenside
@@ -35,13 +54,13 @@ public final class MoveGenerator {
                     }
                     castleCheck = true;
                 }
-    
+
                 if (piece instanceof final Rider rider) {
                     final int range = rider.getRange();
                     for (final Offset offset : rider.getOffsets()) {
                         for (final Coordinate target : offset.extendFrom(origin, range)) {
                             final Piece targetPiece = position.getSquare(target).getPiece();
-    
+
                             if (!castleCheck) {
                                 if (targetPiece == null || targetPiece.getColor() != toMove) {
                                     moves.add(new Move(origin, target, MoveType.NORMAL, null));
@@ -63,7 +82,7 @@ public final class MoveGenerator {
                                     }
                                 }
                             }
-    
+
                             if (targetPiece != null) break;
                         }
                     }
@@ -72,15 +91,11 @@ public final class MoveGenerator {
                 }
             }
         }
-    
+
         MoveGenerator.checkPawnThreatsAndAddCastlingMoves(position, moves, canWhiteCastleKingside, canWhiteCastleQueenside,
                 canBlackCastleKingside, canBlackCastleQueenside);
-    
-        return moves;
-    }
 
-    public static Set<Move> getLegalMoves(final Position position) {
-        return MoveGenerator.generateLegalMoves(position);
+        return moves;
     }
 
     private static void processPawnMoves(final Position position, final Set<Move> moves, final Color toMove,
@@ -122,7 +137,7 @@ public final class MoveGenerator {
             final Coordinate from, final Coordinate to) {
     
         if (to.getRank() == (pawnColor == Color.WHITE ? Rank.EIGHT : Rank.ONE)) {
-            for (final Piece promotionPiece : Pieces.promotionCandidates.get(pawnColor)) {
+            for (final Piece promotionPiece : Pieces.PROMOTION_CANDIDATES.get(pawnColor)) {
                 moves.add(new Move(from, to, MoveType.PROMOTION, promotionPiece));
             }
         } else {
@@ -192,26 +207,25 @@ public final class MoveGenerator {
             Coordinate notToMoveKingCoordinate = null;
             final Color toMove = newPosition.getToMove();
             final Color notToMove = toMove == Color.WHITE ? Color.BLACK : Color.WHITE;
-            outerloop:
-            for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
-                for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
-                    final Coordinate candidateCoordinate = Coordinate.valueOf(fileIndex, rankIndex);
-                    final Piece candidate = newPosition.getSquare(candidateCoordinate).getPiece();
-                    if (candidate instanceof final King king && king.getColor() == notToMove) {
-                        notToMoveKingCoordinate = candidateCoordinate;
-                        break outerloop;
-                    }
-                }
-            }
-            if (notToMoveKingCoordinate == null) {
-                continue;
-            }
-            if (!PositionValidator.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
+            notToMoveKingCoordinate = getNotToMoveKingCoordinate(newPosition, notToMove, notToMoveKingCoordinate);
+            if (!Positions.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
                 moves.add(move);
             }
         }
-
         return moves;
+    }
+
+    private static Coordinate getNotToMoveKingCoordinate(Position newPosition, Color notToMove, Coordinate notToMoveKingCoordinate) {
+        for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
+            for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
+                final Coordinate candidateCoordinate = Coordinate.valueOf(fileIndex, rankIndex);
+                final Piece candidate = newPosition.getSquare(candidateCoordinate).getPiece();
+                if (candidate instanceof final King king && king.getColor() == notToMove) {
+                    return candidateCoordinate;
+                }
+            }
+        }
+        return notToMoveKingCoordinate;
     }
 
     private MoveGenerator() {

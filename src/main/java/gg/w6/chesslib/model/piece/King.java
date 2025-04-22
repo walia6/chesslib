@@ -2,18 +2,19 @@ package gg.w6.chesslib.model.piece;
 
 import gg.w6.chesslib.model.Color;
 import gg.w6.chesslib.model.Offset;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents a King piece.
  *
  * <p>The King moves one square in any direction (horizontally, vertically, or diagonally).</p>
  *
- * <p>Example usage:</p>
- * <pre>{@code
- * King king = new King(Color.WHITE);
- * Offset[] offsets = king.getOffsets(); // returns the movement offsets for the King
- * }</pre>
+ * <p>Notably, this class extends <code>Rider</code>.</p>
+ * <p>See {@link Rider}.</p>
  */
+@Immutable
 public class King extends Rider {
     
     private static final char WHITE_LETTER = 'K';
@@ -31,11 +32,12 @@ public class King extends Rider {
      *
      * @param color The color of the King (either WHITE or BLACK).
      */
-    public King(Color color) {
+    public King(@NotNull final Color color) {
         super(color);
     }
 
     @Override
+    @NotNull
     public Offset[] getOffsets() {
         return OFFSETS;
     }

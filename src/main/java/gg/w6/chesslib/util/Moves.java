@@ -6,49 +6,76 @@ import gg.w6.chesslib.model.Position;
 import gg.w6.chesslib.model.Move;
 import gg.w6.chesslib.model.piece.Pawn;
 import gg.w6.chesslib.model.piece.Piece;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class consists exclusively of static methods that operate on or return
+ * {@link Move}s. It is not instantiable.
+ */
 public final class Moves {
 
-    public static boolean isCapture(final Move move, final Position position) {
+    /**
+     * Return if the given move is a capture on a given position.
+     *
+     * @param move the {@link Move} to test
+     * @param position the {@link Position} to test the move on
+     * @return <code>true</code> if the given move is a capture on a given position
+     */
+    public static boolean isCapture(@NotNull final Move move, @NotNull final Position position) {
         return position.getSquare(move.getTo()).getPiece() != null
                 || move.getMoveType() == MoveType.EN_PASSANT;
     }
 
-    public static boolean isPawnMove(final Move move, final Position position) {
+    /**
+     * Return if the given move is a {@link Pawn} move on a given position.
+     *
+     * @param move the {@link Move} to test
+     * @param position the {@link Position} to test the move on
+     * @return <code>true</code> if the given move is a {@link Pawn} move on a given position
+     */
+    public static boolean isPawnMove(@NotNull final Move move,
+                                     @NotNull final Position position) {
         return position.getSquare(move.getFrom()).getPiece() instanceof Pawn;
     }
 
-    public static Coordinate getEnPassantTarget(final Move move,
-                                                final Position position) {
-        final Piece movedPiece = position.getSquare(move.getFrom()).getPiece();
-
-        if (!(movedPiece instanceof Pawn))
-            return null;
-
-        final Coordinate from = move.getFrom();
-
-        final int fromRankIndex = from.getRank().ordinal();
-        final int toRankIndex = move.getTo().getRank().ordinal();
-
-        return Math.abs(fromRankIndex - toRankIndex) == 2
-                ? Coordinate.valueOf(from.getFile().ordinal(),
-                        (fromRankIndex + toRankIndex) / 2)
-                : null;
-    }
-
-    public static boolean isPawnDoublePush(final Move move,
-            final Position position) {
+    /**
+     * Determines if the given {@link Move} is a pawn double-push in the context
+     * of a given {@link Position} <i>before</i> the move is made.
+     *
+     * @param move the move that is being made.
+     * @param position the position <i>before</i> the move is made
+     * @return <code>true</code> if the move is a pawn double-push
+     */
+    public static boolean isPawnDoublePush(@NotNull final Move move,
+                                           @NotNull final Position position) {
         final Piece movedPiece = position.getSquare(move.getFrom()).getPiece();
         final Coordinate from = move.getFrom();
         final Coordinate to = move.getTo();
 
         return movedPiece instanceof Pawn
                 && from.getFile() == to.getFile()
-                && Math.abs(from.getRank().ordinal()
-                        - to.getRank().ordinal()) == 2;
+                && Math.abs(from.getRank().ordinal() - to.getRank().ordinal()) == 2;
     }
 
-    public static String generateSAN(final Move move, final Position position) {
+    /**
+     * Generates the Standard Algebraic Notation (SAN) representation for the
+     * given {@link Move} in the context of the provided {@link Position}
+     * <i>before</i> the move is made.
+     *
+     * <p>This method accounts for special cases such as castling, captures, promotions,
+     * ambiguous disambiguation, and check or checkmate markers.</p>
+     *
+     * @param move the {@link Move} to generate SAN for
+     * @param position the {@link Position} the move is played in (before the
+     *                 move is made)
+     * @return the SAN string representation of the move
+     * @throws IllegalArgumentException if the move is castling to an invalid
+     *                                  file, or if there is no piece at the
+     *                                  source square, or if the move is a
+     *                                  promotion without a target piece
+     */
+    @NotNull
+    public static String generateSAN(@NotNull final Move move, @NotNull final Position position) {
 
         final StringBuilder sanStringBuilder = new StringBuilder();
 
@@ -60,22 +87,23 @@ public final class Moves {
                     default -> throw new IllegalArgumentException("Invalid castling destination " + move.getTo() + ".");
                 }
             );
-            
+
             appendSANSuffix(sanStringBuilder, position.applyTo(move));
             return sanStringBuilder.toString();
         }
 
         final Piece fromPiece = position.getSquare(move.getFrom()).getPiece();
+        if (fromPiece == null) {
+            throw new IllegalArgumentException("There is no piece at " + move.getFrom() + ".");
+        }
 
         if (isPawnMove(move, position)) {
             if (isCapture(move, position)) {
-
                 // <from file>
                 sanStringBuilder.append(move.getFrom().getFile());
 
                 // 'x'
                 sanStringBuilder.append("x");
-
             }
 
             // <to square>
@@ -91,6 +119,7 @@ public final class Moves {
             }
 
         } else {
+
             // <Piece symbol>
             sanStringBuilder.append(Character.toUpperCase(fromPiece.getLetter()));
 
@@ -105,7 +134,7 @@ public final class Moves {
                     sanStringBuilder.append(move.getFrom().getFile());
                 } else {
                     sanStringBuilder.append(move.getFrom().getRank());
-                } 
+                }
             }
 
             // ['x']
@@ -122,11 +151,6 @@ public final class Moves {
 
         return sanStringBuilder.toString();
     }
-
-
-
-
-
 
     private static void appendSANSuffix(final StringBuilder sanStringBuilder,
                                         final Position position) {

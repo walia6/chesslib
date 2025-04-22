@@ -138,6 +138,6 @@ class PositionTest {
             }
         }
         
-        assertDoesNotThrow(() -> new Position(squares, null, null, null, 0, 0));
+        assertDoesNotThrow(() -> new Position(squares, new CastlingRights(), null, Color.WHITE, 0, 0));
     }
 }

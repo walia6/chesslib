@@ -9,6 +9,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A utility class for parsing Standard Algebraic Notation (SAN) strings into {@link Move} objects.
+ *
+ * <p>This class supports castling, pawn moves (including captures and en passant),
+ * promotions, and disambiguated piece moves. It assumes all input SAN strings are legal
+ * and that the associated {@link Position} accurately reflects the game state.</p>
+ *
+ * <p>This parser does not validate legality beyond what is required for unambiguous interpretation.
+ * Illegal SAN inputs will result in an {@link IllegalArgumentException}.</p>
+ *
+ * <p>This class is not instantiable.</p>
+ */
 public class SanParser {
     private static final Pattern CASTLING_SHORT = Pattern.compile("O-O");
     private static final Pattern CASTLING_LONG = Pattern.compile("O-O-O");
@@ -16,6 +28,25 @@ public class SanParser {
     private static final Pattern PAWN_MOVE = Pattern.compile("^([a-h])?(x)?([a-h][2-7])$");
     private static final Pattern PIECE_MOVE = Pattern.compile("^([NBRQK])([a-h]?[1-8]?)(x)?([a-h][1-8])$");
 
+    /**
+     * Parses a legal SAN (Standard Algebraic Notation) string into a {@link Move}
+     * based on the given {@link Position}.
+     *
+     * <p>Supports:</p>
+     * <ul>
+     *     <li>Short and long castling (O-O and O-O-O)</li>
+     *     <li>Pawn moves, captures, and promotions (e.g., e4, exd5, e8=Q)</li>
+     *     <li>Piece moves with optional disambiguation (e.g., Nf3, R1d1)</li>
+     * </ul>
+     *
+     * <p>The input need not contain check/mate suffixes (+, #); they are
+     * stripped automatically.</p>
+     *
+     * @param san the SAN string representing a move
+     * @param position the current {@link Position} the move applies to
+     * @return the parsed {@link Move}
+     * @throws IllegalArgumentException if the SAN is unrecognized or ambiguous
+     */
     public static Move parse(final String san, final Position position) {
         final String cleanSan = san.replace("+", "").replace("#", "");
 

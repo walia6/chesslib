@@ -1,20 +1,22 @@
 package gg.w6.chesslib.model;
 
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Represents the color of a chess piece.
  *
  * <p>Chess pieces can be either white or black.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * Color color = Color.WHITE;
- * }</pre>
  */
+@Immutable
 public enum Color {
+
     /**
      * Represents the white color.
      */
     WHITE,
+
     /**
      * Represents the black color.
      */
@@ -27,6 +29,7 @@ public enum Color {
      * @return The corresponding Color object.
      * @throws IllegalArgumentException if the character does not represent a valid color.
      */
+    @NotNull
     public static Color valueOf(final char c) {
         return switch (c) {
             case 'b', 'B' -> BLACK;

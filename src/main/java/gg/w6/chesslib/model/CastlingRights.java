@@ -1,16 +1,11 @@
 package gg.w6.chesslib.model;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Represents the castling rights of both players in a chess game.
- *
- * <p>Castling is a special move in chess that involves the King and a Rook.</p>
- *
- * <p>Example usage:</p>
- * <pre>{@code
- * CastlingRights rights = new CastlingRights();
- * rights.setWhiteKingside(false);
- * }</pre>
  */
+@Immutable
 public class CastlingRights {
     
     /**
@@ -73,30 +68,60 @@ public class CastlingRights {
         this.blackQueenside = blackQueenside;
     }
 
+    /**
+     * @return <code>true</code> if white still has the right to castle kingside
+     */
     public boolean whiteKingside() {
         return this.whiteKingside;
     }
 
+    /**
+     * @return <code>true</code> if white still has the right to castle queenside
+     */
     public boolean whiteQueenside() {
         return this.whiteQueenside;
     }
 
+    /**
+     * @return <code>true</code> if black still has the right to castle kingside
+     */
     public boolean blackKingside() {
         return this.blackKingside;
     }
 
+    /**
+     * @return <code>true</code> if black still has the right to castle queenside
+     */
     public boolean blackQueenside() {
         return this.blackQueenside;
     }
 
+    /**
+     * Determine there are no castling rights.
+     *
+     * <p>Semantically equivalent to:</p>
+     * <pre><code>
+     *     whiteKingside()
+     *     &amp;&amp; whiteQueenside()
+     *     &amp;&amp; blackKingside()
+     *     &amp;&amp; blackQueenside()
+     * </code></pre>
+     * @return <code>true</code> if there are no castling rights.
+     */
     public boolean allRightFalse() {
         return this.whiteKingside && this.whiteQueenside
                 && this.blackKingside && this.blackQueenside;
     }
 
+    /**
+     * Determine if this is equivalent to another object.
+     * @param obj the object with which to compare against
+     * @return <code>true</code> if the other object is a
+     * <code>CastlingRights</code> object and all rights are equivalent
+     */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CastlingRights otherCastlingRights) {
+        if (obj instanceof final CastlingRights otherCastlingRights) {
             return otherCastlingRights.whiteKingside == whiteKingside
                     && otherCastlingRights.whiteQueenside == whiteQueenside
                     && otherCastlingRights.blackKingside == blackKingside
@@ -105,5 +130,4 @@ public class CastlingRights {
             return false;
         }
     }
-
 }

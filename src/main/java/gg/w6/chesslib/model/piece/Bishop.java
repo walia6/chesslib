@@ -3,6 +3,9 @@ package gg.w6.chesslib.model.piece;
 import gg.w6.chesslib.model.Color;
 import gg.w6.chesslib.model.Offset;
 import gg.w6.chesslib.model.PromotionCandidate;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents a Bishop piece.
@@ -15,6 +18,7 @@ import gg.w6.chesslib.model.PromotionCandidate;
  * Offset[] offsets = bishop.getOffsets(); // returns the diagonal movement offsets
  * }</pre>
  */
+@Immutable
 @PromotionCandidate
 public class Bishop extends Rider {
 
@@ -38,11 +42,12 @@ public class Bishop extends Rider {
      *
      * @param color The color of the Bishop (either WHITE or BLACK).
      */
-    public Bishop(Color color) {
+    public Bishop(@NotNull final Color color) {
         super(color);
     }
 
     @Override
+    @NotNull
     public Offset[] getOffsets() {
         return OFFSETS;
     }

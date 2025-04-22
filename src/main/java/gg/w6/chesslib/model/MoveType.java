@@ -1,8 +1,11 @@
 package gg.w6.chesslib.model;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Represents the various types of moves in a position
  */
+@Immutable
 public enum MoveType {
     /**
      * Represents a normal move, capturing or not
@@ -10,17 +13,17 @@ public enum MoveType {
     NORMAL,
 
     /**
-     * Represents any castling move
+     * Represents a castling move
      */
     CASTLING,
 
     /**
-     * Represents any enpassant move
+     * Represents an EnPassant move
      */
     EN_PASSANT,
 
     /**
-     * Represents any promotion
+     * Represents a promotion, capturing or not
      */
     PROMOTION
 }
