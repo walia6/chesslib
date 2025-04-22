@@ -197,4 +197,25 @@ public class Positions {
                         (fromRankIndex + toRankIndex) / 2)
                 : null;
     }
+
+    /**
+     * Determine if the supplied {@link Position} is checkmate.
+     *
+     * @param position the <code>Position</code> to check for checkmate
+     * @return <code>true</code> if the <code>Position</code> is checkmate, <code>false</code> otherwise.
+     */
+    public static boolean isCheckmate(Position position) {
+        return !MoveGenerator.oneOrMoreLegalMoves(position) && isKingToMoveInCheck(position);
+    }
+
+    /**
+     * Determine if the supplied {@link Position} is stalemate.
+     *
+     * @param position the <code>Position</code> to check for stalemate
+     * @return <code>true</code> if the <code>Position</code> is stalemate, <code>false</code> otherwise.
+     */
+    public static boolean isStalemate(Position position) {
+        return !MoveGenerator.oneOrMoreLegalMoves(position) && !isKingToMoveInCheck(position);
+    }
+
 }

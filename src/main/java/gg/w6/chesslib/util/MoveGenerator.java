@@ -17,6 +17,7 @@ public final class MoveGenerator {
     
     /**
      * Get the legal moves for the supplied {@link Position}.
+     *
      * @param position the {@link Position} to find the legal moves for
      * @return the set of legal {@link Move}s
      */
@@ -24,6 +25,43 @@ public final class MoveGenerator {
     public static Set<Move> getLegalMoves(@NotNull final Position position) {
         // TODO: memoize
         return MoveGenerator.generateLegalMoves(position);
+    }
+
+    /**
+     * Determine if there are one or more legal moves for the supplied {@link Position}.
+     *
+     * <p>This method is useful for speedy checkmate or stalemate calculations</p>
+     *
+     * @param position position the {@link Position} to determine the number of legal moves for
+     * @return <code>true</code> if there is >= 1 legal moves, <code>false</code> otherwise.
+     */
+    public static boolean oneOrMoreLegalMoves(final Position position) {
+        for (final Move move : generatePseudoLegalMoves(position)) {
+            final Position newPosition = position.applyTo(move);
+            // find the notToMoveKing
+            Coordinate notToMoveKingCoordinate = null;
+            final Color toMove = newPosition.getToMove();
+            final Color notToMove = toMove == Color.WHITE ? Color.BLACK : Color.WHITE;
+            outerloop:
+            for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
+                for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
+                    final Coordinate candidateCoordinate = Coordinate.valueOf(fileIndex, rankIndex);
+                    final Piece candidate = newPosition.getSquare(candidateCoordinate).getPiece();
+                    if (candidate instanceof final King king && king.getColor() == notToMove) {
+                        notToMoveKingCoordinate = candidateCoordinate;
+                        break outerloop;
+                    }
+                }
+            }
+            if (notToMoveKingCoordinate == null) {
+                continue;
+            }
+            if (!Positions.isTargetedByColor(notToMoveKingCoordinate, toMove, newPosition)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static Set<Move> generatePseudoLegalMoves(final Position position) {

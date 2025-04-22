@@ -48,7 +48,10 @@ public class SanParser {
      * @throws IllegalArgumentException if the SAN is unrecognized or ambiguous
      */
     public static Move parse(final String san, final Position position) {
-        final String cleanSan = san.replace("+", "").replace("#", "");
+        final String cleanSan = san.replace("+", "")
+                .replace("#", "")
+                .replace("!", "")
+                .replace("?", "");
 
         if (CASTLING_SHORT.matcher(cleanSan).matches()) {
             return parseCastling(position, true);
