@@ -101,16 +101,16 @@ public class CastlingRights {
      *
      * <p>Semantically equivalent to:</p>
      * <pre><code>
-     *     whiteKingside()
-     *     &amp;&amp; whiteQueenside()
-     *     &amp;&amp; blackKingside()
-     *     &amp;&amp; blackQueenside()
+     *     !whiteKingside()
+     *     &amp;&amp; !whiteQueenside()
+     *     &amp;&amp; !blackKingside()
+     *     &amp;&amp; !blackQueenside()
      * </code></pre>
      * @return <code>true</code> if there are no castling rights.
      */
     public boolean allRightFalse() {
-        return this.whiteKingside && this.whiteQueenside
-                && this.blackKingside && this.blackQueenside;
+        return !this.whiteKingside && !this.whiteQueenside
+                && !this.blackKingside && !this.blackQueenside;
     }
 
     /**
