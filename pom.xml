@@ -6,7 +6,7 @@
 
     <groupId>gg.w6</groupId>
     <artifactId>chesslib</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -41,16 +41,14 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.0</version> <!-- latest as of April 2025 -->
+            <version>26.0.0</version>
             <scope>compile</scope>
         </dependency>
-
-
-
     </dependencies>
 
     <build>
         <plugins>
+            <!-- JUnit runner -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -59,10 +57,12 @@
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
+
+            <!-- Javadoc JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version> <!-- use the latest -->
+                <version>3.6.3</version>
                 <executions>
                     <execution>
                         <id>check-javadoc</id>
@@ -71,12 +71,66 @@
                         </goals>
                         <phase>verify</phase>
                     </execution>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <attach>true</attach> <!-- ✅ THIS is the key -->
+                        </configuration>
+                    </execution>
                 </executions>
                 <configuration>
                     <failOnError>true</failOnError>
-                    <additionalJOption>-Xdoclint:all</additionalJOption> <!-- Enforces doclint -->
+                    <additionalJOption>-Xdoclint:all</additionalJOption>
                 </configuration>
             </plugin>
+
+            <!-- Sources JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <attach>true</attach> <!-- ✅ THIS is the key -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>install-javadoc-and-sources</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>gg.w6</groupId>
+                            <artifactId>chesslib</artifactId>
+                            <version>1.0.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>false</generatePom>
+                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                            <sources>${project.build.directory}/${project.build.finalName}-sources.jar</sources>
+                            <javadoc>${project.build.directory}/${project.build.finalName}-javadoc.jar</javadoc>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
