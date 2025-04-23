@@ -218,4 +218,72 @@ public class Positions {
         return !MoveGenerator.oneOrMoreLegalMoves(position) && !isKingToMoveInCheck(position);
     }
 
+    /**
+     * Returns a list of all coordinates from which pieces of the specified {@code targeterColor}
+     * are attacking the given {@code target} square in the provided {@link Position}.
+     *
+     * <p>This includes:
+     * <ul>
+     *     <li>{@link Rider} pieces (e.g., rooks, bishops, queens, knights, kings) that can reach
+     *         the target square through their movement patterns without being blocked.</li>
+     *     <li>Pawns that can capture the target square diagonally.</li>
+     *     <li>Pawns that can perform an en passant capture onto the target square, if applicable.</li>
+     * </ul>
+     *
+     * @param target the square being checked for attacks
+     * @param targeterColor the color of the attacking pieces
+     * @param position the current board position
+     * @return a list of coordinates from which the target square is being attacked
+     */
+    public static List<Coordinate> getTargetingCoordinates(@NotNull final Coordinate target,
+                                                           @NotNull final Color targeterColor,
+                                                           @NotNull final Position position) {
+        final List<Coordinate> targeting = new ArrayList<>();
+
+        for (int fileIndex = 0; fileIndex < File.COUNT; fileIndex++) {
+            for (int rankIndex = 0; rankIndex < Rank.COUNT; rankIndex++) {
+                final Coordinate origin = Coordinate.valueOf(fileIndex, rankIndex);
+                final Piece piece = position.getSquare(origin).getPiece();
+
+                if (piece == null || piece.getColor() != targeterColor) {
+                    continue;
+                }
+
+                if (piece instanceof final Rider rider) {
+                    for (final Offset offset : rider.getOffsets()) {
+                        for (final Coordinate candidate : offset.extendFrom(origin, rider.getRange())) {
+                            if (candidate.equals(target)) {
+                                targeting.add(origin);
+                                break;
+                            } else if (position.getSquare(candidate).getPiece() != null) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // must be a pawn
+                    final int direction = targeterColor == Color.WHITE ? 1 : -1;
+                    final int expectedRank = origin.getRankIndex() + direction;
+
+                    // normal diagonal capture
+                    if (expectedRank == target.getRankIndex() &&
+                            Math.abs(origin.getFileIndex() - target.getFileIndex()) == 1) {
+                        targeting.add(origin);
+                    }
+
+                    // en passant
+                    final Coordinate epTarget = position.getEnPassantTarget();
+                    if (epTarget != null && epTarget.equals(target)) {
+                        if (origin.getRankIndex() == (targeterColor == Color.WHITE ? 4 : 3) &&
+                                Math.abs(origin.getFileIndex() - target.getFileIndex()) == 1) {
+                            targeting.add(origin);
+                        }
+                    }
+                }
+            }
+        }
+
+        return targeting;
+    }
+
 }

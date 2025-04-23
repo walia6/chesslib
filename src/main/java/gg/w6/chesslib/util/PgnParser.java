@@ -23,6 +23,11 @@ public class PgnParser {
     } // ensure non-instantiability
 
     private static final Pattern TAG_PAIR_PATTERN = Pattern.compile("\\[(\\w+)\\s+\"([^\"]*)\"]");
+    private static final Pattern COMMENT_PATTERN = Pattern.compile("\\{[^}]*}");
+    private static final Pattern NAG_PATTERN = Pattern.compile("\\$\\d+");
+    private static final Pattern VARIATION_PATTERN = Pattern.compile("\\([^)]*\\)");
+    private static final Pattern MOVE_NUMBER_PATTERN = Pattern.compile("\\d+\\.\\.\\.|\\d+\\.");
+    private static final Pattern MULTISPACE_PATTERN = Pattern.compile("\\s+");
 
     /**
      * Parse a PGN string containing a single game and return a {@link Game} record encapsulating said game.
@@ -85,16 +90,15 @@ public class PgnParser {
         }
 
         // Get the movetext section (after the last tag)
-        final String moveSection = rawPgn.substring(lastTagEnd).trim();
 
         // Remove comments, NAGs, variations, and normalize spacing
-        final String cleaned = moveSection
-                .replaceAll("\\{[^}]*}", " ")               // remove comments
-                .replaceAll("\\$\\d+", " ")                 // remove NAGs
-                .replaceAll("\\([^)]*\\)", " ")             // remove variations
-                .replaceAll("\\d+\\.\\.\\.|\\d+\\.", " ")   // remove move numbers (1. and 1...)
-                .replaceAll("\\s+", " ")                    // normalize spacing
-                .trim();
+        String cleaned = rawPgn.substring(lastTagEnd).trim();
+        cleaned = COMMENT_PATTERN.matcher(cleaned).replaceAll(" ");
+        cleaned = NAG_PATTERN.matcher(cleaned).replaceAll(" ");
+        cleaned = VARIATION_PATTERN.matcher(cleaned).replaceAll(" ");
+        cleaned = MOVE_NUMBER_PATTERN.matcher(cleaned).replaceAll(" ");
+        cleaned = MULTISPACE_PATTERN.matcher(cleaned).replaceAll(" ").trim();
+
 
 
         // Remove trailing result token from SAN list if present
