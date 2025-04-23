@@ -9,13 +9,13 @@
 
 ## Features
 
-- Immutable `Position` objects for safe concurrent analysis
-- Full legal move generation (castling, en passant, promotions, etc.)
-- FEN and SAN parsing/generation
-- PGN parsing support (including bulk PGN stream handling)
-- Clean separation of game state, piece behavior, and utility logic
-- Static utility classes — no runtime dependencies
-- Extensive JSON-driven and perft test coverage
+- 🧊 Immutable `Position` objects for safe concurrent analysis  
+- ♟️ Full legal move generation (castling, en passant, promotions, etc.)  
+- 🔁 FEN and SAN parsing/generation  
+- 📜 PGN parsing support (including bulk PGN stream handling)  
+- 🧠 Clean separation of game state, piece behavior, and utility logic  
+- ⚙️ Static utility classes — no runtime dependencies  
+- ✅ Extensive JSON-driven and perft test coverage  
 
 ---
 
