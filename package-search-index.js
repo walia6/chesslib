@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"gg.w6.chesslib.model"},{"l":"gg.w6.chesslib.model.piece"},{"l":"gg.w6.chesslib.util"}];updateSearchResults();
