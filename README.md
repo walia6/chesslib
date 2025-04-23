@@ -92,7 +92,7 @@ import gg.w6.chesslib.model.piece.King;
 import gg.w6.chesslib.model.piece.Rook;
 import gg.w6.chesslib.model.Color;
 
-var builder = new PositionBuilder();
+PositionBuilder builder = new PositionBuilder();
 builder.setToMove(Color.WHITE);
 builder.setWhiteKingsideRight(true);
 builder.setBlackKingsideRight(true);
@@ -101,7 +101,7 @@ builder.addPiece(new Rook(Color.WHITE), Coordinate.valueOf("h1"));
 builder.addPiece(new King(Color.BLACK), Coordinate.valueOf("e8"));
 builder.addPiece(new Rook(Color.BLACK), Coordinate.valueOf("h8"));
 
-var position = builder.toPosition();
+Position position = builder.toPosition();
 System.out.println(position.generateFEN());
 ```
 
